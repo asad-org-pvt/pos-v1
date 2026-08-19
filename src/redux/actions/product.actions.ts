@@ -1,6 +1,6 @@
 import { createAction } from "@reduxjs/toolkit";
 import { Dispatch } from "redux";
-import { getProductsFromInventory } from "../../parser/inventory";
+import { productService } from "../../services/app/ProductService";
 
 // Define action types
 export const fetchProducts = createAction("fetch/productsRequest");
@@ -10,15 +10,15 @@ export const fetchProductsFailure = createAction<string>(
 );
 
 // Async action creator
-export const fetchProductList = () => {
+export const fetchProductList = (tenantId?: string) => {
   return async (dispatch: Dispatch) => {
     dispatch(fetchProducts());
 
     try {
-      const productsList = await getProductsFromInventory();
+      const productsList = await productService.getProducts(tenantId);
       dispatch(fetchProductsSuccess(productsList));
-    } catch (error) {
-      dispatch(fetchProductsFailure(error.message));
+    } catch (error: any) {
+      dispatch(fetchProductsFailure(error?.message || "Failed to fetch products"));
     }
   };
 };

@@ -1,11 +1,10 @@
 import { createUseStyles } from "react-jss";
-import { getComponentColors } from "../../themes/color-grads";
 
 // Type
 interface StyleProps {
   sideBarIsActive: boolean;
 }
-const colors = getComponentColors();
+
 export const useStyles = createUseStyles({
   root: {
     height: "100%",
@@ -13,10 +12,11 @@ export const useStyles = createUseStyles({
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
-    backgroundColor: colors.PRIMARY.TEXT_COLOR,
+    backgroundColor: "var(--bg-paper, #ffffff)",
+    color: "var(--text-primary, #0f172a)",
     transition: "0.25s",
-    borderLeft: `1px solid ${colors.PRIMARY.OUTLINE}`,
-    borderRight: `1px solid ${colors.PRIMARY.OUTLINE}`,
+    borderLeft: "1px solid var(--border-color, rgba(0, 0, 0, 0.08))",
+    borderRight: "1px solid var(--border-color, rgba(0, 0, 0, 0.08))",
   },
   activeBar: {
     width: 280,
@@ -58,20 +58,21 @@ export const useStyles = createUseStyles({
     cursor: "default",
     "& $navText": {
       textDecorationLine: "line-through",
+      color: "var(--text-disabled, #94a3b8)",
     },
   },
   childBadgeZero: {
     borderRadius: 100,
-    backgroundColor: colors.DISABLED.BACKGROUND,
-    color: colors.DISABLED.TEXT_COLOR,
+    backgroundColor: "var(--bg-surface, #f1f5f9)",
+    color: "var(--text-secondary, #64748b)",
     fontSize: 12,
     borderColor: "transparent",
     fontWeight: 600,
   },
   childBadge: {
     borderRadius: 100,
-    backgroundColor: colors.DISABLED.BACKGROUND,
-    color: colors.DISABLED.TEXT_COLOR,
+    backgroundColor: "var(--bg-surface, #f1f5f9)",
+    color: "var(--text-secondary, #64748b)",
     fontSize: 12,
     borderColor: "transparent",
     fontWeight: 600,
@@ -79,19 +80,20 @@ export const useStyles = createUseStyles({
   dot: {
     height: 7,
     width: 7,
-    backgroundColor: colors.DISABLED.BACKGROUND,
+    backgroundColor: "var(--primary-color, #0d6efd)",
     borderRadius: "50%",
     display: "inline-block",
     marginLeft: 5,
     marginBottom: 5,
   },
   badgeActive: {
-    backgroundColor: colors.DISABLED.BACKGROUND,
+    backgroundColor: "var(--primary-color, #0d6efd)",
+    color: "#ffffff",
   },
   childBadgeAppoint: {
     borderRadius: 100,
-    backgroundColor: colors.DISABLED.BACKGROUND,
-    color: colors.DISABLED.TEXT_COLOR,
+    backgroundColor: "var(--bg-surface, #f1f5f9)",
+    color: "var(--text-secondary, #64748b)",
     fontSize: 12,
     borderColor: "transparent",
     fontWeight: 600,
@@ -99,12 +101,13 @@ export const useStyles = createUseStyles({
     width: 29,
   },
   badgeActiveAppoint: {
-    backgroundColor: colors.DISABLED.BACKGROUND,
+    backgroundColor: "var(--primary-color, #0d6efd)",
+    color: "#ffffff",
   },
   navActiveItem: ({ sideBarIsActive }: StyleProps) => ({
     padding: 12,
     minHeight: 48,
-    backgroundColor: colors.DISABLED.OUTLINE_BACKGROUND,
+    backgroundColor: "var(--bg-surface-hover, rgba(0, 0, 0, 0.04))",
     justifyContent: sideBarIsActive ? "flex-start" : "center",
     alignItems: "center !important",
     display: "flex !important",
@@ -141,17 +144,19 @@ export const useStyles = createUseStyles({
   },
   welcomeText: {
     marginRight: 4,
+    color: "var(--text-secondary, #64748b)",
   },
   userNameText: {
     display: "block",
     lineHeight: "20px",
-    color: colors.DISABLED.TEXT_COLOR,
+    color: "var(--text-primary, #0f172a)",
     textAlign: "left",
+    fontWeight: 600,
   },
   userInfoText: {
     display: "block",
     lineHeight: "20px",
-    color: colors.DISABLED.TEXT_COLOR,
+    color: "var(--text-secondary, #64748b)",
     textAlign: "left",
   },
   menuArrowWrapper: {
@@ -160,7 +165,7 @@ export const useStyles = createUseStyles({
     position: "absolute",
     right: -2,
     "& svg path": {
-      fill: colors.DISABLED.OUTLINE_BACKGROUND,
+      fill: "var(--text-secondary, #64748b)",
     },
   },
   userCard: {
@@ -171,20 +176,22 @@ export const useStyles = createUseStyles({
     width: "100%",
     padding: "20px 16px",
     position: "relative",
+    backgroundColor: "var(--bg-paper, #ffffff)",
+    color: "var(--text-primary, #0f172a)",
   },
   rightSideUserCard: {
     padding: "24px !important",
     maxHeight: 88,
   },
   borderTop: {
-    borderTop: `1px solid ${colors.DISABLED.OUTLINE_BACKGROUND}`,
-    borderColor: colors.DISABLED.OUTLINE_BACKGROUND,
+    borderTop: "1px solid var(--border-color, rgba(0, 0, 0, 0.08))",
+    borderColor: "var(--border-color, rgba(0, 0, 0, 0.08))",
   },
   borderBottom: {
-    borderBottom: `1px solid ${colors.DISABLED.OUTLINE_BACKGROUND}`,
+    borderBottom: "1px solid var(--border-color, rgba(0, 0, 0, 0.08))",
   },
   userWrapper: {
-    display: "flex  ",
+    display: "flex",
     flexDirection: "row",
     width: "100%",
     alignItems: "center",
@@ -197,16 +204,17 @@ export const useStyles = createUseStyles({
     width: "100%",
   },
   navActiveText: {
-    color: `${colors.DISABLED.TEXT_COLOR} !important`,
+    color: "var(--primary-color, #0d6efd) !important",
   },
   navText: {
-    color: colors.DISABLED.TEXT_COLOR,
+    color: "var(--text-primary, #0f172a)",
     whiteSpace: "break-spaces",
     fontWeight: 700,
     overflowX: "auto",
   },
   subNavText: {
     fontWeight: 500,
+    color: "var(--text-secondary, #64748b)",
   },
   sideBarToggler: {
     height: 40,
@@ -214,8 +222,9 @@ export const useStyles = createUseStyles({
     maxWidth: 40,
     borderRadius: 99,
     padding: "0px !important",
-    border: `1px solid ${colors.DISABLED.OUTLINE_BACKGROUND}`,
-    color: colors.DISABLED.TEXT_COLOR,
+    border: "1px solid var(--border-color, rgba(0, 0, 0, 0.08))",
+    color: "var(--text-primary, #0f172a)",
+    backgroundColor: "var(--bg-surface, #f1f5f9)",
   },
   togglerIcon: {
     width: 24,
@@ -244,8 +253,8 @@ export const useStyles = createUseStyles({
     position: "relative",
   },
   badge: {
-    color: colors.SECONDARY.BACKGROUND,
-    backgroundColor: "#FFF1F8",
+    color: "var(--secondary-color, #0284c7)",
+    backgroundColor: "var(--bg-surface, #f1f5f9)",
     height: 22,
     fontSize: 12,
     borderRadius: 99,
@@ -257,7 +266,7 @@ export const useStyles = createUseStyles({
     fontSize: 12,
     lineHeight: "20px",
     position: "absolute",
-    color: colors.SECONDARY.BACKGROUND,
+    color: "var(--secondary-color, #0284c7)",
     top: -12,
     right: -2,
   },
@@ -269,14 +278,15 @@ export const useStyles = createUseStyles({
     gap: 16,
   },
   bottomNavItem: {
-    color: colors.DISABLED.OUTLINE_BACKGROUND,
+    color: "var(--text-secondary, #64748b)",
     position: "relative",
   },
   btn: {
     height: 40,
     minWidth: "40px !important",
     width: 40,
-    background: "#F1F8FF",
+    background: "var(--bg-surface, #f1f5f9)",
+    color: "var(--text-primary, #0f172a)",
     padding: 10,
     borderRadius: 5,
   },

@@ -1,5 +1,4 @@
 import {createUseStyles} from 'react-jss';
-import {Colors} from '../../colors';
 import {Country} from 'react-phone-number-input';
 import {ThemeInterface} from '../../../../interfaces/theme';
 
@@ -35,6 +34,11 @@ export const useStylesFromThemeFunction = createUseStyles((theme: ThemeInterface
       width: '100%',
       height: 38,
       padding: '2px 8px',
+      color: 'var(--text-primary, #0f172a)',
+      backgroundColor: 'var(--input-bg, #ffffff)',
+      '&::placeholder': {
+        color: 'var(--input-placeholder, #94a3b8)',
+      },
       '&:focus': {
         border: 'none',
         background: 'none',
@@ -48,28 +52,33 @@ export const useStylesFromThemeFunction = createUseStyles((theme: ThemeInterface
       overflow: 'hidden',
       paddingLeft: 10,
       borderRadius: '10px',
-      backgroundColor: Colors.blueGrayLight,
+      backgroundColor: 'var(--input-bg, #ffffff)',
+      border: '1px solid var(--input-border, rgba(0, 0, 0, 0.2))',
       width: '100%',
       '& .PhoneInputInput': {
         border: 'none',
         font: 'inherit',
         fontSize: '15px',
-        backgroundColor: Colors.blueGrayLight,
+        backgroundColor: 'transparent',
+        color: 'var(--text-primary, #0f172a)',
         '&:focus': {
           outline: '0px',
           border: 'none',
         },
         padding: '9.5px',
-        color: Colors.grayLabel,
         '&::placeholder': {
-          color: Colors.grayInputPlaceholder,
+          color: 'var(--input-placeholder, #94a3b8)',
         },
       },
       '& .PhoneInputCountrySelect': {
+        color: 'var(--text-primary, #0f172a)',
+        backgroundColor: 'var(--input-bg, #ffffff)',
         '& option': {
           padding: 2,
           font: 'inherit',
           fontSize: '15px',
+          backgroundColor: 'var(--bg-paper, #ffffff)',
+          color: 'var(--text-primary, #0f172a)',
         },
       },
     },
@@ -85,9 +94,11 @@ export const useStylesFromThemeFunction = createUseStyles((theme: ThemeInterface
       fontSize: '13px',
       display: 'flex',
       justifyContent: 'space-between',
+      color: 'var(--text-primary, #0f172a)',
       '& span': {
         fontWeight: 'normal',
         fontSize: '13px',
+        color: 'var(--text-secondary, #64748b)',
       },
       fontWeight: 'bold',
     },
@@ -101,49 +112,56 @@ export const useStylesFromThemeFunction = createUseStyles((theme: ThemeInterface
       border: 'solid',
       borderWidth: '1px',
       borderRadius: '10px',
-      borderColor: Colors.grayLight,
-      backgroundColor: Colors.blueGrayLight,
+      borderColor: 'var(--input-border, rgba(0, 0, 0, 0.2))',
+      backgroundColor: 'var(--input-bg, #ffffff)',
       display: 'flex',
       alignItems: 'center',
       width: '100%',
     },
     passwordError: {
-      borderColor: Colors.red,
+      borderColor: 'var(--error, #dc2626)',
     },
     passwordValid: {
-      borderColor: Colors.lightGreen,
+      borderColor: 'var(--success, #16a34a)',
     },
     passwordInput: {
       border: 0,
       height: '100%',
       width: '100%',
       borderRadius: '10px 0px 0px 10px',
-      backgroundColor: Colors.blueGrayLight,
+      backgroundColor: 'var(--input-bg, #ffffff)',
+      color: 'var(--text-primary, #0f172a)',
       padding: '12px',
       fontSize: '15px',
+      '&::placeholder': {
+        color: 'var(--input-placeholder, #94a3b8)',
+      },
       '&:focus': {
         outline: '0px',
         borderRadius: '10px',
-        backgroundColor: Colors.blueGrayLight,
+        backgroundColor: 'var(--input-bg, #ffffff)',
       },
     },
     passwordIcon: {
       border: 0,
       paddingTop: 2,
       paddingBottom: 2,
-      backgroundColor: Colors.blueGrayLight,
+      backgroundColor: 'transparent',
+      color: 'var(--text-secondary, #64748b)',
     },
     inputContainer: {
       border: '1px solid',
       borderWidth: '1px',
+      borderColor: 'var(--input-border, rgba(0, 0, 0, 0.2))',
       borderRadius: '10px',
       display: 'flex',
       alignItems: 'center',
       overflow: 'hidden',
       width: '100%',
+      backgroundColor: 'var(--input-bg, #ffffff)',
     },
     labelDefault: {
-      color: Colors.grayLabel,
+      color: 'var(--text-primary, #0f172a)',
     },
   };
 });

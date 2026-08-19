@@ -11,22 +11,24 @@ import { Accept } from "react-dropzone";
 const useStylesFromThemeFunction = createUseStyles((theme: ThemeInterface) => {
   return {
     dragAndDropText: {
-      color: "rgba(48, 46, 56, 0.6)",
+      color: "var(--text-secondary, #64748b)",
       "& span": {
         fontWeight: "bold",
+        color: "var(--text-primary, #0f172a)",
       },
     },
     label: {
-      color: "#222b45",
+      color: "var(--text-primary, #0f172a)",
       fontSize: 12,
-      fontWeight: theme.font.weightSemibold,
+      fontWeight: theme?.font?.weightSemibold || 600,
       marginBottom: 3,
       marginLeft: 10,
     },
     uploadBox: {
       alignItems: "center",
-      background: "#F5F7FB",
-      borderColor: "#E7ECF5",
+      background: "var(--bg-surface, #F5F7FB)",
+      borderColor: "var(--border-color, #E7ECF5)",
+      color: "var(--text-primary, #0f172a)",
       borderRadius: 10,
       borderStyle: "dotted",
       borderWidth: 2,
@@ -34,9 +36,11 @@ const useStylesFromThemeFunction = createUseStyles((theme: ThemeInterface) => {
       flexDirection: "column",
       justifyContent: "center",
       minHeight: 150,
+      transition: "all 0.2s ease",
     },
     uploadBoxActive: {
-      borderColor: "#6135FB",
+      borderColor: "var(--primary-color, #0d6efd)",
+      background: "var(--bg-surface-hover, rgba(0,0,0,0.04))",
     },
     uploadBoxRow: {
       flexDirection: "row",
@@ -117,13 +121,13 @@ const FileUpload: FC<ComponentProps> = ({
       {file.name}
       <IconButton
         style={{
-          border: `1px solid ${Colors.gray}`,
+          border: `1px solid var(--border-color, rgba(0, 0, 0, 0.12))`,
           borderRadius: 5,
           display: "flex",
         }}
         onClick={() => remove(i)}
       >
-        <RemoveIcon fill={Colors.grayLighter} />
+        <RemoveIcon fill="var(--text-secondary, #94a3b8)" />
       </IconButton>
     </span>
   ));

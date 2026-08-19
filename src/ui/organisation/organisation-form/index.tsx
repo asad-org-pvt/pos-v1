@@ -1,396 +1,476 @@
 import { useFormik } from "formik";
 import React from "react";
-import ButtonComponent from "../../common/components/button-component";
-import { ComponentProps, useStylesFromThemeFunction } from "./OrganisationForm";
+import {
+  Box,
+  Button,
+  Grid,
+  TextField,
+  Typography,
+  Paper,
+  MenuItem,
+  InputAdornment,
+} from "@mui/material";
+import {
+  Business,
+  Email,
+  Phone,
+  Language,
+  LocationOn,
+  Person,
+  AttachMoney,
+  Percent,
+  Category,
+  Save as SaveIcon,
+  Close,
+} from "@mui/icons-material";
 
-const OrganisationForm: React.FC<ComponentProps> = ({
+export interface ComponentProps {
+  onSubmit: (values: any, helpers?: any) => void;
+  onChange?: (data: any) => void;
+  organisation?: any;
+  options?: any;
+  onImageChange?: (data: any) => void;
+  onCancel?: () => void;
+}
+
+const BUSINESS_TYPES = [
+  "Retail Store",
+  "Supermarket / Grocery",
+  "Pharmacy / Healthcare",
+  "Restaurant / Cafe",
+  "Wholesale & Distribution",
+  "Electronics & Tech",
+  "Fashion & Apparel",
+  "Services & Consulting",
+  "Manufacturing",
+  "Other",
+];
+
+const CURRENCIES = [
+  { code: "PKR", symbol: "Rs" },
+  { code: "USD", symbol: "$" },
+  { code: "EUR", symbol: "€" },
+  { code: "GBP", symbol: "£" },
+  { code: "AED", symbol: "AED" },
+  { code: "SAR", symbol: "SAR" },
+  { code: "CAD", symbol: "CA$" },
+  { code: "INR", symbol: "₹" },
+  { code: "AUD", symbol: "A$" },
+];
+
+export const OrganisationForm: React.FC<ComponentProps> = ({
   onSubmit,
-  onChange,
   organisation,
-  options,
-  onImageChange,
+  onCancel,
 }) => {
-  const classes = useStylesFromThemeFunction();
-
   const initialValues = {
-    id: organisation?.id || "",
     name: organisation?.name || "",
-    type: organisation?.type || "",
+    type: organisation?.type || "Retail Store",
+    industry: organisation?.industry || "Retail",
     founded: organisation?.founded || "",
     description: organisation?.description || "",
-    website: organisation?.website || "",
-    phone: organisation?.phone || "",
     email: organisation?.email || "",
+    phone: organisation?.phone || "",
+    website: organisation?.website || "",
+    ceo: organisation?.ceo || "",
     address: organisation?.address || "",
     city: organisation?.city || "",
     state: organisation?.state || "",
-    country: organisation?.country || "",
+    country: organisation?.country || "Pakistan",
     postalCode: organisation?.postalCode || "",
-    logo: organisation?.logo || "",
-    ceo: organisation?.ceo || "",
+    currency: organisation?.currency || "PKR",
+    taxRate: organisation?.taxRate !== undefined ? organisation.taxRate : 0.05,
+    discountRate: organisation?.discountRate !== undefined ? organisation.discountRate : 0.02,
     numEmployees: organisation?.numEmployees || "",
     revenue: organisation?.revenue || "",
-    industry: organisation?.industry || "",
     parentOrganization: organisation?.parentOrganization || "",
-    dateUpdated: organisation?.dateUpdated || "",
   };
-  const validate = (values) => {};
-  // const onSubmit = (values) => {
 
-  // }
+  const validate = (values: typeof initialValues) => {
+    const errors: Record<string, string> = {};
+    if (!values.name?.trim()) {
+      errors.name = "Organization name is required";
+    }
+    if (!values.email?.trim()) {
+      errors.email = "Contact email is required";
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
+      errors.email = "Invalid email address format";
+    }
+    return errors;
+  };
 
   const formik = useFormik({
     initialValues,
     validate,
-    onSubmit: (values, { resetForm }) => {
-      onSubmit(values, { resetForm });
+    enableReinitialize: true,
+    onSubmit: (values, helpers) => {
+      const payload: any = {
+        ...values,
+        taxRate: Number(values.taxRate) || 0,
+        discountRate: Number(values.discountRate) || 0,
+        numEmployees: values.numEmployees ? Number(values.numEmployees) : undefined,
+        revenue: values.revenue ? Number(values.revenue) : undefined,
+      };
+      if (organisation?.id) {
+        payload.id = organisation.id;
+      }
+      onSubmit(payload, helpers);
     },
   });
 
   return (
-    <div>
-      <form onSubmit={formik.handleSubmit}>
-        <div className={classes.container}>
-          <div className="form-group">
-            <div className={classes.column}>
-              <label htmlFor="id">
-                Id<span className={classes.colorRed}>*</span>{" "}
-                <span className={classes.labelHintWrapper}>Enter CNIC</span>
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="id"
-                name="id"
-                value={formik.values.id}
-                required
-                onChange={formik.handleChange}
-              />
-            </div>
-
-            <div className={classes.column}>
-              <label htmlFor="name">
-                Name<span className={classes.colorRed}>*</span>{" "}
-                <span className={classes.labelHintWrapper}>
-                  Organization Name
-                </span>
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="name"
+    <Box component="form" onSubmit={formik.handleSubmit} sx={{ p: 1 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+        {/* Section 1: Basic Profile */}
+        <Paper elevation={0} sx={{ p: 2.5, borderRadius: 2, border: "1px solid", borderColor: "divider", bgcolor: "background.paper" }}>
+          <Typography variant="subtitle1" fontWeight="700" sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2, color: "primary.main" }}>
+            <Business fontSize="small" /> Organization Profile
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={8}>
+              <TextField
+                fullWidth
+                size="small"
+                label="Organization Name"
                 name="name"
-                value={formik.values.name}
                 required
+                value={formik.values.name}
                 onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.name && Boolean(formik.errors.name)}
+                helperText={formik.touched.name && formik.errors.name}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Business fontSize="small" sx={{ color: "text.secondary" }} />
+                    </InputAdornment>
+                  ),
+                }}
               />
-            </div>
-
-            <div className={classes.column}>
-              <label htmlFor="type">
-                Type
-                <span className={classes.labelHintWrapper}>
-                  Organization Type
-                </span>
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="type"
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                select
+                fullWidth
+                size="small"
+                label="Business Type"
                 name="type"
                 value={formik.values.type}
                 onChange={formik.handleChange}
+              >
+                {BUSINESS_TYPES.map((t) => (
+                  <MenuItem key={t} value={t}>{t}</MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                size="small"
+                label="Industry Sector"
+                name="industry"
+                value={formik.values.industry}
+                onChange={formik.handleChange}
+                placeholder="e.g. Retail, Grocery, FMCG"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Category fontSize="small" sx={{ color: "text.secondary" }} />
+                    </InputAdornment>
+                  ),
+                }}
               />
-            </div>
-
-            <div className={classes.column}>
-              <label htmlFor="founded">
-                Founded
-                <span className={classes.labelHintWrapper}>Founding Date</span>
-              </label>
-              <input
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                size="small"
                 type="date"
-                className="form-control"
-                id="founded"
+                label="Founded Date"
                 name="founded"
+                InputLabelProps={{ shrink: true }}
                 value={formik.values.founded}
                 onChange={formik.handleChange}
               />
-            </div>
-
-            <div className={classes.column}>
-              <label htmlFor="description">
-                Description
-                <span className={classes.labelHintWrapper}>
-                  Organization Description
-                </span>
-              </label>
-              <textarea
-                className="form-control"
-                id="description"
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                multiline
+                rows={2}
+                size="small"
+                label="Brief Description / Mission"
                 name="description"
                 value={formik.values.description}
                 onChange={formik.handleChange}
+                placeholder="Brief summary of business operations and store policy"
               />
-            </div>
+            </Grid>
+          </Grid>
+        </Paper>
 
-            <div className={classes.column}>
-              <label htmlFor="website">
-                Website
-                <span className={classes.labelHintWrapper}>
-                  Organization Website
-                </span>
-              </label>
-              <input
-                type="url"
-                className="form-control"
-                id="website"
-                name="website"
-                value={formik.values.website}
+        {/* Section 2: Contact & Online Presence */}
+        <Paper elevation={0} sx={{ p: 2.5, borderRadius: 2, border: "1px solid", borderColor: "divider", bgcolor: "background.paper" }}>
+          <Typography variant="subtitle1" fontWeight="700" sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2, color: "primary.main" }}>
+            <Email fontSize="small" /> Contact & Communication
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                size="small"
+                label="Official Email"
+                name="email"
+                type="email"
+                required
+                value={formik.values.email}
                 onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email && formik.errors.email}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Email fontSize="small" sx={{ color: "text.secondary" }} />
+                    </InputAdornment>
+                  ),
+                }}
               />
-            </div>
-
-            <div className={classes.column}>
-              <label htmlFor="phone">
-                Phone
-                <span className={classes.labelHintWrapper}>Contact Phone</span>
-              </label>
-              <input
-                type="tel"
-                className="form-control"
-                id="phone"
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                size="small"
+                label="Phone Number"
                 name="phone"
                 value={formik.values.phone}
                 onChange={formik.handleChange}
+                placeholder="+92 300 1234567"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Phone fontSize="small" sx={{ color: "text.secondary" }} />
+                    </InputAdornment>
+                  ),
+                }}
               />
-            </div>
-
-            <div className={classes.column}>
-              <label htmlFor="email">
-                Email<span className={classes.colorRed}>*</span>
-                <span className={classes.labelHintWrapper}>Contact Email</span>
-              </label>
-              <input
-                type="email"
-                className="form-control"
-                id="email"
-                required
-                name="email"
-                value={formik.values.email}
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                size="small"
+                label="Website URL"
+                name="website"
+                type="url"
+                value={formik.values.website}
                 onChange={formik.handleChange}
+                placeholder="https://example.com"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Language fontSize="small" sx={{ color: "text.secondary" }} />
+                    </InputAdornment>
+                  ),
+                }}
               />
-            </div>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                size="small"
+                label="Executive / CEO / Director"
+                name="ceo"
+                value={formik.values.ceo}
+                onChange={formik.handleChange}
+                placeholder="Full Name"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Person fontSize="small" sx={{ color: "text.secondary" }} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+          </Grid>
+        </Paper>
 
-            <div className={classes.column}>
-              <label htmlFor="address">
-                Address
-                <span className={classes.labelHintWrapper}>
-                  Organization Address
-                </span>
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="address"
+        {/* Section 3: Address & Location */}
+        <Paper elevation={0} sx={{ p: 2.5, borderRadius: 2, border: "1px solid", borderColor: "divider", bgcolor: "background.paper" }}>
+          <Typography variant="subtitle1" fontWeight="700" sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2, color: "primary.main" }}>
+            <LocationOn fontSize="small" /> Headquarters & Address
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                size="small"
+                label="Street Address"
                 name="address"
                 value={formik.values.address}
                 onChange={formik.handleChange}
+                placeholder="Suite / Building / Street"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LocationOn fontSize="small" sx={{ color: "text.secondary" }} />
+                    </InputAdornment>
+                  ),
+                }}
               />
-            </div>
-
-            <div className={classes.column}>
-              <label htmlFor="city">
-                City
-                <span className={classes.labelHintWrapper}>City</span>
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="city"
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                fullWidth
+                size="small"
+                label="City"
                 name="city"
                 value={formik.values.city}
                 onChange={formik.handleChange}
               />
-            </div>
-
-            <div className={classes.column}>
-              <label htmlFor="state">
-                State/Province
-                <span className={classes.labelHintWrapper}>State/Province</span>
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="state"
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                fullWidth
+                size="small"
+                label="State / Province"
                 name="state"
                 value={formik.values.state}
                 onChange={formik.handleChange}
               />
-            </div>
-
-            <div className={classes.column}>
-              <label htmlFor="country">
-                Country
-                <span className={classes.labelHintWrapper}>Country</span>
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="country"
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                fullWidth
+                size="small"
+                label="Country"
                 name="country"
                 value={formik.values.country}
                 onChange={formik.handleChange}
               />
-            </div>
-
-            <div className={classes.column}>
-              <label htmlFor="postalCode">
-                ZIP/Postal Code
-                <span className={classes.labelHintWrapper}>
-                  ZIP/Postal Code
-                </span>
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="postalCode"
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                fullWidth
+                size="small"
+                label="Postal / ZIP Code"
                 name="postalCode"
                 value={formik.values.postalCode}
                 onChange={formik.handleChange}
               />
-            </div>
+            </Grid>
+          </Grid>
+        </Paper>
 
-            <div className={classes.column}>
-              <label htmlFor="logo">
-                Logo
-                <span className={classes.labelHintWrapper}>
-                  Organization Logo
-                </span>
-              </label>
-              <input
-                type="file"
-                className="form-control"
-                id="logo"
-                name="logo"
+        {/* Section 4: Operational & Tax Policies */}
+        <Paper elevation={0} sx={{ p: 2.5, borderRadius: 2, border: "1px solid", borderColor: "divider", bgcolor: "background.paper" }}>
+          <Typography variant="subtitle1" fontWeight="700" sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2, color: "primary.main" }}>
+            <AttachMoney fontSize="small" /> Operational Defaults & Metrics
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                select
+                fullWidth
+                size="small"
+                label="Default Currency"
+                name="currency"
+                value={formik.values.currency}
                 onChange={formik.handleChange}
-              />
-            </div>
-
-            <div className={classes.column}>
-              <label htmlFor="ceo">
-                CEO/President
-                <span className={classes.labelHintWrapper}>
-                  CEO/President Name
-                </span>
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="ceo"
-                name="ceo"
-                value={formik.values.ceo}
-                onChange={formik.handleChange}
-              />
-            </div>
-
-            <div className={classes.column}>
-              <label htmlFor="numEmployees">
-                Number of Employees
-                <span className={classes.labelHintWrapper}>
-                  Total Employees
-                </span>
-              </label>
-              <input
+              >
+                {CURRENCIES.map((c) => (
+                  <MenuItem key={c.code} value={c.code}>
+                    {c.code} ({c.symbol})
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                size="small"
                 type="number"
-                className="form-control"
-                id="numEmployees"
+                label="Default Tax Rate"
+                name="taxRate"
+                value={formik.values.taxRate}
+                onChange={formik.handleChange}
+                inputProps={{ step: 0.01, min: 0, max: 1 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Percent fontSize="small" sx={{ color: "text.secondary" }} />
+                    </InputAdornment>
+                  ),
+                }}
+                helperText="e.g. 0.05 = 5%"
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                size="small"
+                type="number"
+                label="Default Discount Rate"
+                name="discountRate"
+                value={formik.values.discountRate}
+                onChange={formik.handleChange}
+                inputProps={{ step: 0.01, min: 0, max: 1 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Percent fontSize="small" sx={{ color: "text.secondary" }} />
+                    </InputAdornment>
+                  ),
+                }}
+                helperText="e.g. 0.02 = 2%"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                size="small"
+                type="number"
+                label="Number of Employees"
                 name="numEmployees"
                 value={formik.values.numEmployees}
                 onChange={formik.handleChange}
+                placeholder="e.g. 25"
               />
-            </div>
-
-            <div className={classes.column}>
-              <label htmlFor="revenue">
-                Revenue
-                <span className={classes.labelHintWrapper}>Annual Revenue</span>
-              </label>
-              <input
-                type="number"
-                className="form-control"
-                id="revenue"
-                name="revenue"
-                value={formik.values.revenue}
-                onChange={formik.handleChange}
-              />
-            </div>
-
-            <div className={classes.column}>
-              <label htmlFor="industry">
-                Industry
-                <span className={classes.labelHintWrapper}>
-                  Industry Sector
-                </span>
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="industry"
-                name="industry"
-                value={formik.values.industry}
-                onChange={formik.handleChange}
-              />
-            </div>
-
-            <div className={classes.column}>
-              <label htmlFor="parentOrganization">
-                Parent Organization
-                <span className={classes.labelHintWrapper}>
-                  Parent Organization
-                </span>
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="parentOrganization"
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                size="small"
+                label="Parent Organization (if branch)"
                 name="parentOrganization"
                 value={formik.values.parentOrganization}
                 onChange={formik.handleChange}
+                placeholder="Parent enterprise name"
               />
-            </div>
+            </Grid>
+          </Grid>
+        </Paper>
 
-            <div className={classes.column}>
-              <label htmlFor="dateUpdated">
-                Date Updated
-                <span className={classes.labelHintWrapper}>
-                  Last Updated Date
-                </span>
-              </label>
-              <input
-                type="date"
-                className="form-control"
-                id="dateUpdated"
-                name="dateUpdated"
-                value={formik.values.dateUpdated}
-                onChange={formik.handleChange}
-              />
-            </div>
-          </div>
-        </div>
-        <div className={classes.centeredRow}>
-          <ButtonComponent
+        {/* Action Controls */}
+        <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 1 }}>
+          {onCancel && (
+            <Button variant="outlined" color="inherit" onClick={onCancel} startIcon={<Close />}>
+              Cancel
+            </Button>
+          )}
+          <Button
             type="submit"
+            variant="contained"
+            color="primary"
             disabled={formik.isSubmitting}
-            style={{ width: "100%", height: "50px" }}
+            startIcon={<SaveIcon />}
+            sx={{ px: 4, py: 1 }}
           >
-            <h4>
-              <b>Submit</b>
-            </h4>
-          </ButtonComponent>
-        </div>
-      </form>
-    </div>
+            {organisation?.id ? "Update Organization" : "Create Organization"}
+          </Button>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

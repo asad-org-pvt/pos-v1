@@ -1,27 +1,21 @@
-import {
-  getOrders,
-  addOrder,
-  deleteOrder,
-  updateOrder,
-} from "../../data-management/cloud/firebase/firestore/order";
+import { orderService } from "../../services/app/OrderService";
 
 // get orders from POS
 export const getOrdersFromPOS = async () => {
-  const orders = await getOrders();
-  return orders.map((order) => order.data());
+  return await orderService.getOrders();
 };
 
 // add order in POS
 export const addOrderIntoPOS = async (order: any) => {
-  return await addOrder(order);
+  return await orderService.createOrder(order);
 };
-//delete order api
+
+// delete order api
 export const deleteOrderFromPOS = async (id: string) => {
-  const orderDeleted = await deleteOrder(id);
-  return orderDeleted;
+  return await orderService.deleteOrder(id);
 };
-//edit order api
+
+// edit order api
 export const editOrderFromPOS = async (id: string, order: any) => {
-  const orderEdited = await updateOrder(id, order);
-  return orderEdited;
+  return await orderService.updateOrder(id, order);
 };

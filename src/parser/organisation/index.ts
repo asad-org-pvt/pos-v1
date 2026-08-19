@@ -1,30 +1,21 @@
-import {
-  addOrganisation,
-  deleteOrganisation,
-  getOrganisations,
-  updateOrganisation,
-} from "../../data-management/cloud/firebase/firestore/organisation";
+import { organisationService } from "../../services/app/OrganisationService";
 
-// Get Organisations from inventory
+// Get Organisations from database
 export const getAllOrganisations = async () => {
-  const organisations = await getOrganisations();
-  return organisations.map((organisation) => organisation.data());
+  return await organisationService.getOrganisations();
 };
 
-// Add an Organisation to inventory
+// Add an Organisation to database
 export const addOneOrganisation = async (organisation: any) => {
-  const organisationAdded = await addOrganisation(organisation);
-  return organisationAdded;
+  return await organisationService.createOrganisation(organisation);
 };
 
 // Delete an Organisation API
 export const deleteOneOrganisation = async (id: string) => {
-  const organisationDeleted = await deleteOrganisation(id);
-  return organisationDeleted;
+  return await organisationService.deleteOrganisation(id);
 };
 
 // Edit an Organisation API
 export const editOrganisation = async (id: string, organisation: any) => {
-  const organisationEdited = await updateOrganisation(id, organisation);
-  return organisationEdited;
+  return await organisationService.updateOrganisation(id, organisation);
 };

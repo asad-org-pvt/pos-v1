@@ -2,7 +2,6 @@ import LoadingSpinner from "../loading-spinner";
 import React, { FC, ReactElement } from "react";
 import { ThemeInterface } from "../../../../interfaces/theme";
 import { createUseStyles } from "react-jss";
-import { BLACKS } from "../../themes/color-grads";
 
 const useStylesFromThemeFunction = createUseStyles((theme: ThemeInterface) => {
   return {
@@ -10,7 +9,10 @@ const useStylesFromThemeFunction = createUseStyles((theme: ThemeInterface) => {
       borderCollapse: "collapse",
       position: "relative",
       width: "100%",
-      backgroundColor: BLACKS[15],
+      backgroundColor: "var(--bg-paper, #ffffff)",
+      color: "var(--text-primary, #0f172a)",
+      borderRadius: "8px",
+      overflow: "hidden",
     },
     klaimTableLoader: {
       alignItems: "center",
@@ -28,17 +30,22 @@ const useStylesFromThemeFunction = createUseStyles((theme: ThemeInterface) => {
         },
         height: 52,
         padding: "0",
+        color: "var(--text-primary, #0f172a)",
       },
       "& tr": {
-        boxShadow: "0px -1px 0px #e8e9f2 inset",
+        boxShadow: "0px -1px 0px var(--border-color, rgba(0, 0, 0, 0.08)) inset",
         height: 52,
-        MozBoxShadow: "0px -1px 0px #e8e9f2 inset",
-        WebkitBoxShadow: "0px -1px 0px #e8e9f2 inset",
+        MozBoxShadow: "0px -1px 0px var(--border-color, rgba(0, 0, 0, 0.08)) inset",
+        WebkitBoxShadow: "0px -1px 0px var(--border-color, rgba(0, 0, 0, 0.08)) inset",
+        "&:hover": {
+          backgroundColor: "var(--bg-surface-hover, rgba(0, 0, 0, 0.02))",
+        },
       },
     },
     klaimTd: {
       height: 52,
       padding: 0,
+      color: "var(--text-primary, #0f172a)",
     },
     klaimTh: {
       "&:first-child": {
@@ -46,17 +53,19 @@ const useStylesFromThemeFunction = createUseStyles((theme: ThemeInterface) => {
       },
       fontSize: 14,
       fontWeight: 700,
-      paddingBottom: 19,
-      paddingTop: 19,
+      paddingBottom: 16,
+      paddingTop: 16,
       textAlign: "left",
+      color: "var(--text-secondary, #64748b)",
     },
     klaimThead: {
-      borderBottom: "1px solid #e8e9f2",
+      borderBottom: "1px solid var(--border-color, rgba(0, 0, 0, 0.08))",
+      backgroundColor: "var(--bg-surface, #f1f5f9)",
       "& td": {
-        boxShadow: "-1px 0px 0px #e8e9f2 inset",
+        boxShadow: "-1px 0px 0px var(--border-color, rgba(0, 0, 0, 0.08)) inset",
         height: 52,
-        MozBoxShadow: "-1px 0px 0px #e8e9f2 inset",
-        WebkitBoxShadow: "-1px 0px 0px #e8e9f2 inset",
+        MozBoxShadow: "-1px 0px 0px var(--border-color, rgba(0, 0, 0, 0.08)) inset",
+        WebkitBoxShadow: "-1px 0px 0px var(--border-color, rgba(0, 0, 0, 0.08)) inset",
       },
     },
   };

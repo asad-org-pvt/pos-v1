@@ -1,8 +1,155 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
+
+    // ==========================================
+    // AUTHENTICATION & AUTHORIZATION HELPERS
+    // ==========================================
+
+    function isAuthenticated() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    function getTenant() {
+      return request.auth.token.tenantId;
+    }
+
+    function getRole() {
+      return request.auth.token.role;
+    }
+
+    function isPlatformAdmin() {
+      return isAuthenticated() && getTenant() == 'platform' && getRole() == 'admin';
+    }
+
+    function isValidMember() {
+      return isAuthenticated() && (
+        isPlatformAdmin() || (
+          getTenant() != null &&
+          getRole() in ['cashier', 'manager', 'admin']
+        )
+      );
+    }
+
+    function isManager() {
+      return isAuthenticated() && (
+        isPlatformAdmin() || (
+          getTenant() != null &&
+          getRole() in ['manager', 'admin']
+        )
+      );
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        isPlatformAdmin() || (
+          getTenant() != null &&
+          getRole() == 'admin'
+        )
+      );
+    }
+
+    function matchesSuffix(name, suffix) {
+      return isPlatformAdmin() || (getTenant() != null && name == getTenant() + '-' + suffix);
+    }
+
+    // ==========================================
+    // GLOBAL TOP-LEVEL COLLECTIONS
+    // ==========================================
+
+    // Platform administrators list
+    match /admins/{adminId} {
+      allow read, write: if isPlatformAdmin();
+    }
+
+    // Organization profiles
+    match /organisations/{orgId} {
+      allow read: if isAuthenticated() && (isPlatformAdmin() || getTenant() == orgId);
+      allow create: if isPlatformAdmin();
+      allow update: if isAuthenticated() && (isPlatformAdmin() || (getTenant() == orgId && getRole() == 'admin'));
+      allow delete: if isPlatformAdmin();
+    }
+
+    // Legacy users collection (read-only for authenticated tenant members of own record)
+    match /users/{userId} {
+      allow read, write: if isAuthenticated() && (isPlatformAdmin() || request.auth.uid == userId);
+    }
+
+    // ==========================================
+    // FLAT TENANT-SCOPED COLLECTIONS (${tenantId}-${suffix})
+    // ==========================================
+
+    match /{collectionName}/{docId} {
+
+      allow read: if
+        (isValidMember() && (
+          matchesSuffix(collectionName, 'products') ||
+          matchesSuffix(collectionName, 'orders') ||
+          matchesSuffix(collectionName, 'returns') ||
+          matchesSuffix(collectionName, 'payments') ||
+          matchesSuffix(collectionName, 'stock_movements') ||
+          matchesSuffix(collectionName, 'shifts') ||
+          matchesSuffix(collectionName, 'registers') ||
+          matchesSuffix(collectionName, 'employees') ||
+          matchesSuffix(collectionName, 'customers') ||
+          matchesSuffix(collectionName, 'categories') ||
+          matchesSuffix(collectionName, 'suppliers') ||
+          matchesSuffix(collectionName, 'idempotency') ||
+          matchesSuffix(collectionName, 'settings') ||
+          matchesSuffix(collectionName, 'printer_configs')
+        )) ||
+        (isManager() && matchesSuffix(collectionName, 'purchase_orders'));
+
+      allow create: if
+        (isValidMember() && (
+          matchesSuffix(collectionName, 'orders') ||
+          matchesSuffix(collectionName, 'returns') ||
+          matchesSuffix(collectionName, 'payments') ||
+          matchesSuffix(collectionName, 'stock_movements') ||
+          matchesSuffix(collectionName, 'shifts') ||
+          matchesSuffix(collectionName, 'customers') ||
+          matchesSuffix(collectionName, 'categories') ||
+          matchesSuffix(collectionName, 'suppliers') ||
+          matchesSuffix(collectionName, 'idempotency')
+        )) ||
+        (isManager() && (
+          matchesSuffix(collectionName, 'products') ||
+          matchesSuffix(collectionName, 'purchase_orders') ||
+          matchesSuffix(collectionName, 'registers') ||
+          matchesSuffix(collectionName, 'settings') ||
+          matchesSuffix(collectionName, 'printer_configs')
+        )) ||
+        (isAdmin() && matchesSuffix(collectionName, 'employees'));
+
+      allow update: if
+        (isValidMember() && (
+          (matchesSuffix(collectionName, 'orders') && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['products', 'status', 'refundedAmount', 'updatedAt'])) ||
+          matchesSuffix(collectionName, 'shifts') ||
+          matchesSuffix(collectionName, 'customers') ||
+          matchesSuffix(collectionName, 'categories') ||
+          matchesSuffix(collectionName, 'suppliers')
+        )) ||
+        (isManager() && (
+          matchesSuffix(collectionName, 'products') ||
+          matchesSuffix(collectionName, 'purchase_orders') ||
+          matchesSuffix(collectionName, 'registers') ||
+          matchesSuffix(collectionName, 'settings') ||
+          matchesSuffix(collectionName, 'printer_configs')
+        )) ||
+        (isAdmin() && matchesSuffix(collectionName, 'employees'));
+
+      allow delete: if
+        (isAdmin() && (
+          matchesSuffix(collectionName, 'products') ||
+          matchesSuffix(collectionName, 'registers') ||
+          matchesSuffix(collectionName, 'employees') ||
+          matchesSuffix(collectionName, 'printer_configs')
+        )) ||
+        (isValidMember() && (
+          matchesSuffix(collectionName, 'customers') ||
+          matchesSuffix(collectionName, 'categories') ||
+          matchesSuffix(collectionName, 'suppliers')
+        ));
     }
   }
 }

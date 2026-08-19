@@ -6,10 +6,15 @@ import {
   SERVICE_ID_GMAIL,
   TEMPLATE_ID_INVENTORY_RUNNING_OUT,
 } from "../constants/emailjs";
+import { authService } from "../services/app/AuthService";
+import { setRuntimeTenantId } from "../context/tenantRuntime";
 
+/**
+ * Given the last used invoice number, returns a generator function that yields the NEXT sequential numbers.
+ */
 export const generateNextInvoiceNumber = (initialNumber = "AAA0000000") => {
   if (!/^[A-Z]{3}\d{7}$/.test(initialNumber)) {
-    throw new Error('Invalid input format. It should be like "AAA0000000".');
+    initialNumber = "AAA0000000";
   }
 
   const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -17,9 +22,6 @@ export const generateNextInvoiceNumber = (initialNumber = "AAA0000000") => {
   let currentNumber = parseInt(initialNumber.slice(3), 10);
 
   return function () {
-    const number = currentNumber.toString().padStart(7, "0");
-    const sequentialNumber = `${currentLetters}${number}`;
-
     currentNumber++;
 
     if (currentNumber > 9999999) {
@@ -43,25 +45,26 @@ export const generateNextInvoiceNumber = (initialNumber = "AAA0000000") => {
       }
     }
 
-    return sequentialNumber;
+    const number = currentNumber.toString().padStart(7, "0");
+    return `${currentLetters}${number}`;
   };
 };
 
-export const isEmailValid = (email: string): boolean => {
+export const isEmailValid = (email?: string): boolean => {
+  if (!email) return false;
   const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
   return emailPattern.test(email);
 };
 
-export const isStrongPassword = (password: string): boolean => {
-  if (password.length < 8) {
+export const isStrongPassword = (password?: string): boolean => {
+  if (!password || password.length < 8) {
     return false;
   }
 
   const hasUpperCase = /[A-Z]/.test(password);
   const hasLowerCase = /[a-z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
-  const hasSpecialChar = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/.test(password);
+  const hasSpecialChar = /[!@#$%^&*()_+{}[\]:;<>,.?~\\-]/.test(password);
 
   return hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar;
 };
@@ -72,20 +75,22 @@ export const addUserInLocalstorage = (user: User) => {
     .then((res) => {
       localStorage.setItem("tkn", res);
       localStorage.setItem("uid", user.uid);
-      user?.email && localStorage.setItem("email", user.email);
-      user?.photoURL && localStorage.setItem("photoURL", user.photoURL);
+      if (user.email) localStorage.setItem("email", user.email);
+      if (user.photoURL) localStorage.setItem("photoURL", user.photoURL);
     })
-    .catch((error) => toast.error("Unable to generate idToken"));
+    .catch(() => toast.error("Unable to generate idToken"));
 };
+
 export const setOrganisationInLocalStorage = (organisationEmail: string) => {
-  if (organisationEmail)
-    localStorage.setItem(
-      "org",
-      `${organisationEmail?.split("@")[0]}_${
-        organisationEmail?.split("@")[1]?.split(".")[0]
-      }`
-    );
+  if (organisationEmail) {
+    const orgKey = `${organisationEmail?.split("@")[0]}_${
+      organisationEmail?.split("@")[1]?.split(".")[0]
+    }`;
+    localStorage.setItem("org", orgKey);
+    setRuntimeTenantId(orgKey);
+  }
 };
+
 export const removeUserFromLocalstorage = () => {
   localStorage.removeItem("tkn");
   localStorage.removeItem("uid");
@@ -94,36 +99,32 @@ export const removeUserFromLocalstorage = () => {
   localStorage.removeItem("org");
 };
 
-export const isAuthenticated = () => {
-  if (!localStorage.getItem("tkn")) {
-    return false;
-  }
-  return true;
+/**
+ * Checks authentication status via current Firebase Auth session or token cache.
+ */
+export const isAuthenticated = (): boolean => {
+  const fbUser = authService.getCurrentUser();
+  if (fbUser) return true;
+  return !!localStorage.getItem("tkn");
 };
 
-export const isAdmin = (admins) => {
-  const currentUserEmail = localStorage.getItem("email") ?? "";
+export const isAdmin = (admins: string[] = []): boolean => {
+  const currentUserEmail = authService.getCurrentUser()?.email || localStorage.getItem("email") || "";
   if (!currentUserEmail && admins.length <= 0) {
     return false;
-  } else if (admins.includes(currentUserEmail)) {
-    return true;
   }
-  return false;
+  return admins.includes(currentUserEmail);
 };
 
-export const isOrganisation = (organisations) => {
-  const currentUserEmail = localStorage.getItem("email") ?? "";
+export const isOrganisation = (organisations: any[] = []): boolean => {
+  const currentUserEmail = authService.getCurrentUser()?.email || localStorage.getItem("email") || "";
   if (!currentUserEmail && organisations.length <= 0) {
     return false;
-  } else if (
-    organisations.find((item) => item?.email?.includes(currentUserEmail))
-  ) {
-    return true;
   }
-  return false;
+  return !!organisations.find((item) => item?.email?.includes(currentUserEmail));
 };
 
-export const sendEmail = (toEmail, message) => {
+export const sendEmail = (toEmail: string, message: string) => {
   if (!toEmail || !message) {
     console.error("Invalid email or message");
     return;

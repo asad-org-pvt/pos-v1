@@ -1,44 +1,61 @@
-// export const EMPLOYEES_COLLECTION = "employees";
-// export const CUSTOMERS_COLLECTION = "customers";
-// export const PRODUCTS_COLLECTION = "products";
-// export const ORDERS_COLLECTION = "orders";
-// export const SUPPLIERS_COLLECTION = "suppliers";
-// export const CATEGORIES_COLLECTION = "categories";
-// export const SUB_CATEGORIES_COLLECTION = {
-//   EMPLOYEES: "categories_employees",
-//   CUSTOMERS: "categories_customers",
-//   PRODUCTS: "categories_products",
-//   ORDERS: "categories_orders",
-//   SUPPLIERS: "categories_suppliers",
-// };
-// export const STORES_COLLECTION = `${localStorage.getItem("org")}/stores`;
-// export const LOGS_COLLECTION = `${localStorage.getItem("org")}/logs`;
-// export const TOWNS_COLLECTION = `${localStorage.getItem("org")}/towns`;
-// export const AREAS_COLLECTION = `${localStorage.getItem("org")}/areas`;
-// export const SALES_ROUTES_COLLECTION = `${localStorage.getItem(
-//   "org"
-// )}/sales-routes`;
+import { getRuntimeTenantId } from "../../../../context/tenantRuntime";
+
+/**
+ * Dynamic collection name and path resolvers.
+ * These evaluate at call time, preventing stale module-initialization capture.
+ */
+
 export const ORGANISATIONS_COLLECTION = "organisations";
 export const ADMINS_COLLECTION = "admins";
 
-export const EMPLOYEES_COLLECTION = localStorage.getItem("org")
-  ? `${localStorage.getItem("org")}-employees`
-  : "employees";
-export const CUSTOMERS_COLLECTION = localStorage.getItem("org")
-  ? `${localStorage.getItem("org")}-customers`
-  : "customers";
-export const PRODUCTS_COLLECTION = localStorage.getItem("org")
-  ? `${localStorage.getItem("org")}-products`
-  : "products";
-export const ORDERS_COLLECTION = localStorage.getItem("org")
-  ? `${localStorage.getItem("org")}-orders`
-  : "orders";
-export const SUPPLIERS_COLLECTION = localStorage.getItem("org")
-  ? `${localStorage.getItem("org")}-suppliers`
-  : "suppliers";
-export const CATEGORIES_COLLECTION = localStorage.getItem("org")
-  ? `${localStorage.getItem("org")}-categories`
-  : "categories";
+export const getTenantOrg = (): string => {
+  return getRuntimeTenantId() || localStorage.getItem("org") || "default";
+};
+
+export const getEmployeesCollection = (org = getTenantOrg()): string => {
+  return org && org !== "default" ? `${org}-employees` : "employees";
+};
+
+export const getCustomersCollection = (org = getTenantOrg()): string => {
+  return org && org !== "default" ? `${org}-customers` : "customers";
+};
+
+export const getProductsCollection = (org = getTenantOrg()): string => {
+  return org && org !== "default" ? `${org}-products` : "products";
+};
+
+export const getOrdersCollection = (org = getTenantOrg()): string => {
+  return org && org !== "default" ? `${org}-orders` : "orders";
+};
+
+export const getSuppliersCollection = (org = getTenantOrg()): string => {
+  return org && org !== "default" ? `${org}-suppliers` : "suppliers";
+};
+
+export const getCategoriesCollection = (org = getTenantOrg()): string => {
+  return org && org !== "default" ? `${org}-categories` : "categories";
+};
+
+export const getStoresCollection = (org = getTenantOrg()): string => {
+  return org && org !== "default" ? `${org}-stores` : "stores";
+};
+
+export const getLogsCollection = (org = getTenantOrg()): string => {
+  return org && org !== "default" ? `${org}-logs` : "logs";
+};
+
+export const getTownsCollection = (org = getTenantOrg()): string => {
+  return org && org !== "default" ? `${org}-towns` : "towns";
+};
+
+export const getAreasCollection = (org = getTenantOrg()): string => {
+  return org && org !== "default" ? `${org}-areas` : "areas";
+};
+
+export const getSalesRoutesCollection = (org = getTenantOrg()): string => {
+  return org && org !== "default" ? `${org}-sales-routes` : "sales-routes";
+};
+
 export const SUB_CATEGORIES_COLLECTION = {
   EMPLOYEES: "categories_employees",
   CUSTOMERS: "categories_customers",
@@ -46,18 +63,16 @@ export const SUB_CATEGORIES_COLLECTION = {
   ORDERS: "categories_orders",
   SUPPLIERS: "categories_suppliers",
 };
-export const STORES_COLLECTION = localStorage.getItem("org")
-  ? `${localStorage.getItem("org")}-stores`
-  : "stores";
-export const LOGS_COLLECTION = localStorage.getItem("org")
-  ? `${localStorage.getItem("org")}-logs`
-  : "logs";
-export const TOWNS_COLLECTION = localStorage.getItem("org")
-  ? `${localStorage.getItem("org")}-towns`
-  : "towns";
-export const AREAS_COLLECTION = localStorage.getItem("org")
-  ? `${localStorage.getItem("org")}-areas`
-  : "areas";
-export const SALES_ROUTES_COLLECTION = localStorage.getItem("org")
-  ? `${localStorage.getItem("org")}-sales-routes`
-  : "sales-routes";
+
+// Legacy getter proxies for backward compatibility
+export const EMPLOYEES_COLLECTION = getEmployeesCollection();
+export const CUSTOMERS_COLLECTION = getCustomersCollection();
+export const PRODUCTS_COLLECTION = getProductsCollection();
+export const ORDERS_COLLECTION = getOrdersCollection();
+export const SUPPLIERS_COLLECTION = getSuppliersCollection();
+export const CATEGORIES_COLLECTION = getCategoriesCollection();
+export const STORES_COLLECTION = getStoresCollection();
+export const LOGS_COLLECTION = getLogsCollection();
+export const TOWNS_COLLECTION = getTownsCollection();
+export const AREAS_COLLECTION = getAreasCollection();
+export const SALES_ROUTES_COLLECTION = getSalesRoutesCollection();

@@ -1,52 +1,48 @@
-import {
-  getInventories,
-  getInventory,
-  addInventory,
-  deleteInventory,
-  updateInventory,
-  getInventoryProductDocRef,
-} from "../../data-management/cloud/firebase/firestore/inventory";
+import { productService } from "../../services/app/ProductService";
+import { doc } from "firebase/firestore";
+import { firebaseFirestore } from "../../services";
+import { getProductsCollection } from "../../ui/common/constants/collections";
 
 // get products from inventory
 export const getProductsFromInventory = async () => {
-  const products = await getInventories();
-  return products.map((product) => ({ ...product.data(), ref: product.ref }));
+  const products = await productService.getProducts();
+  const db = firebaseFirestore.getInstance();
+  const collName = getProductsCollection();
+  return products.map((product) => ({
+    ...product,
+    ref: doc(db, collName, product.id),
+  }));
 };
 
 // get products from inventory
 export const getProductByIdFromInventory = async (docId: string) => {
-  const product = await getInventory(docId);
-  return product;
+  return await productService.getProductById(docId);
 };
-// get products from inventory
+
 export const getProductRefByIdFromInventory = async (docId: string) => {
-  const productRef = await getInventoryProductDocRef(docId);
-  return productRef;
+  const db = firebaseFirestore.getInstance();
+  const collName = getProductsCollection();
+  return doc(db, collName, docId);
 };
 
 export const getProductRefByIdFromInventoryByFirebaseInstance = async (
   docId: string,
-  firebaseInstance
+  _firebaseInstance?: any
 ) => {
-  const productRef = await getInventoryProductDocRef(docId);
-  return productRef;
+  return getProductRefByIdFromInventory(docId);
 };
 
 // add product in inventory
 export const addProductIntoInventory = async (product: any) => {
-  const productAdded = await addInventory(product);
-  return productAdded;
+  return await productService.createProduct(product);
 };
-//delete product api
+
+// delete product api
 export const deleteProductFromInventory = async (id: string) => {
-  const productDeleted = await deleteInventory(id);
-  return productDeleted;
+  return await productService.deleteProduct(id);
 };
-//edit product api
+
+// edit product api
 export const editProductFromInventory = async (id: string, product: any) => {
-  const productEdited = await updateInventory(id, {
-    ...product,
-    updatedAt: new Date().getTime().toString(),
-  });
-  return productEdited;
+  return await productService.updateProduct(id, product);
 };

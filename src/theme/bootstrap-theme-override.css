@@ -1,0 +1,142 @@
+/* =========================================================================
+   Bootstrap Theme Overrides for Dark Mode and Theme Variable Integration
+   ========================================================================= */
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* Global transitions for background & color */
+body, [data-theme] {
+  background-color: var(--bg-default, #f8fafc);
+  color: var(--text-primary, #0f172a);
+}
+
+/* 1. React-Bootstrap Tabs & Nav Pills */
+.nav-pills .nav-link {
+  color: var(--text-secondary, #64748b) !important;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.nav-pills .nav-link:hover {
+  background-color: var(--bg-surface-hover, rgba(0,0,0,0.04)) !important;
+  color: var(--text-primary, #0f172a) !important;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+  background-color: var(--primary-color, #0d6efd) !important;
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+/* Nav Tabs (Settings, etc.) */
+.nav-tabs {
+  border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.08)) !important;
+}
+
+.nav-tabs .nav-link {
+  color: var(--text-secondary, #64748b) !important;
+  border: 1px solid transparent !important;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  font-weight: 600;
+  padding: 10px 18px;
+}
+
+.nav-tabs .nav-link:hover {
+  border-color: transparent !important;
+  color: var(--text-primary, #0f172a) !important;
+  background-color: var(--bg-surface-hover, rgba(0,0,0,0.04)) !important;
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--primary-color, #0d6efd) !important;
+  background-color: var(--bg-paper, #ffffff) !important;
+  border-color: var(--border-color, rgba(0, 0, 0, 0.08)) var(--border-color, rgba(0, 0, 0, 0.08)) var(--bg-paper, #ffffff) !important;
+}
+
+/* 2. Modals & Dialogs (React-Bootstrap Modal) */
+[data-theme="dark"] .modal-content {
+  background-color: var(--bg-paper, #1e1e1e) !important;
+  color: var(--text-primary, #f8fafc) !important;
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12)) !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.8) !important;
+}
+
+[data-theme="dark"] .modal-header {
+  border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.12)) !important;
+}
+
+[data-theme="dark"] .modal-footer {
+  border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.12)) !important;
+}
+
+[data-theme="dark"] .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* 3. Bootstrap Forms & Form Controls */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+  background-color: var(--input-bg, #262626) !important;
+  color: var(--text-primary, #f8fafc) !important;
+  border-color: var(--input-border, rgba(255, 255, 255, 0.2)) !important;
+}
+
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus {
+  background-color: var(--input-bg, #262626) !important;
+  color: var(--text-primary, #f8fafc) !important;
+  border-color: var(--primary-color, #0d6efd) !important;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+}
+
+[data-theme="dark"] .form-control::placeholder {
+  color: var(--text-disabled, #64748b) !important;
+}
+
+/* 4. Bootstrap Tables */
+[data-theme="dark"] .table {
+  color: var(--text-primary, #f8fafc) !important;
+  border-color: var(--border-color, rgba(255, 255, 255, 0.12)) !important;
+}
+
+[data-theme="dark"] .table > :not(caption) > * > * {
+  background-color: transparent !important;
+  color: var(--text-primary, #f8fafc) !important;
+  border-bottom-color: var(--border-color, rgba(255, 255, 255, 0.12)) !important;
+}
+
+[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > * {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+[data-theme="dark"] .table-hover > tbody > tr:hover > * {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* 5. Custom Scrollbar for Complete Application */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-default, #f8fafc);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color, #cbd5e1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary, #94a3b8);
+}

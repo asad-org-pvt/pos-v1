@@ -6,9 +6,8 @@ import Table from "../../common/components/table";
 import { useStylesFromThemeFunction } from "./EmployeeList";
 import toast from "react-hot-toast";
 import { Modal } from "react-bootstrap";
-import { getAllEmployees, editEmployee } from "../../../parser/employee";
+import { getAllEmployees, editEmployee, deleteOneEmployee } from "../../../parser/employee";
 import EmployeeForm from "../employee-form";
-import ButtonComponent from "../../common/components/button-component";
 
 interface ComponentProps {
   employees?: any[];
@@ -16,7 +15,7 @@ interface ComponentProps {
 
 const EmployeeList: React.FC<ComponentProps> = (props) => {
   const classes = useStylesFromThemeFunction();
-  const [tableHeadings, setTableHeadings] = React.useState([
+  const [tableHeadings] = React.useState([
     "id",
     "Name",
     "Designation",
@@ -28,75 +27,83 @@ const EmployeeList: React.FC<ComponentProps> = (props) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [selectedEmployee, setSelectedEmployee] = React.useState({} as any);
   const [employees, setEmployees] = React.useState(
-    props?.employees as any[] | [] as any[]
+    (props?.employees as any[]) || []
   );
   const [showEmployeeUpdateModal, setShowEmployeeUpdateModal] =
     React.useState(false);
 
-  // const handleCloseEditModal = () => setShowEditModal(false);
-  // const handleShowEditModal = (Employee: any) => {
-  //   setSelectedEmployee(Employee);
-  //   setShowEditModal(true);
-  // }
+  const loadEmployees = () => {
+    setIsLoading(true);
+    getAllEmployees()
+      .then((res) => {
+        setEmployees(res);
+      })
+      .catch((err) => {
+        toast.error("Failed to load employees");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
   React.useEffect(() => {
-    getAllEmployees().then((res) => {
-      setEmployees(res);
-    });
+    loadEmployees();
   }, []);
 
-  const handleRemoveEmployee = (Employee: any) => {
-    try {
-      if (window.confirm("Are you sure you want to remove this Employee?")) {
-        // call delete Employee api here
-
-        toast.success(`${Employee.name} removed successfully`);
-      } else {
-        throw new Error("Employee not removed");
+  const handleRemoveEmployee = async (employee: any) => {
+    if (window.confirm(`Are you sure you want to remove "${employee.name}"?`)) {
+      try {
+        await deleteOneEmployee(employee.id);
+        toast.success(`${employee.name} removed successfully`);
+        loadEmployees();
+      } catch (e: any) {
+        toast.error(e.message || "Error while removing employee");
       }
-    } catch (e) {
-      toast.error(e.message || "Error while removing Employee");
     }
   };
-  const handleEditEmployee = (Employee: any) => {
-    setSelectedEmployee(Employee);
+
+  const handleEditEmployee = (employee: any) => {
+    setSelectedEmployee(employee);
     setShowEmployeeUpdateModal(true);
   };
+
   const handleUpdate = (updatedEmployee: any) => {
-    // call edit Employee api here
     editEmployee(updatedEmployee.id, updatedEmployee)
-      .then((res) => {
+      .then(() => {
         toast.success(`${updatedEmployee.name} updated successfully`);
         setShowEmployeeUpdateModal(false);
         setSelectedEmployee({} as any);
+        loadEmployees();
       })
-      .catch((e) => {
-        toast.error(e.message || "Error while updating Employee");
+      .catch((e: any) => {
+        toast.error(e.message || "Error while updating employee");
       });
   };
+
   const renderTableData = useMemo(() => {
-    return employees?.map((Employee) => {
+    return employees?.map((employee) => {
       return (
         <tr
-          key={Employee.id}
-          onDoubleClick={() => handleEditEmployee(Employee)}
+          key={employee.id}
+          onDoubleClick={() => handleEditEmployee(employee)}
         >
-          <td>{Employee.id}</td>
-          <td>{Employee.name}</td>
-          <td>{Employee.designation}</td>
-          <td>{Employee.department}</td>
-          <td>{Employee.phoneNumber}</td>
-          <td>{Employee.address}</td>
+          <td>{employee.id}</td>
+          <td>{employee.name}</td>
+          <td>{employee.designation || employee.jobTitle || "-"}</td>
+          <td>{employee.department || "-"}</td>
+          <td>{employee.phoneNumber || "-"}</td>
+          <td>{employee.address || "-"}</td>
           <td>
             <div className={classes.equallyDistantRow}>
               <div
                 className={classes.iconWrapper}
-                onClick={() => handleEditEmployee(Employee)}
+                onClick={() => handleEditEmployee(employee)}
               >
                 <EditIcon fill={Colors.gray} />
               </div>
               <div
                 className={classes.iconWrapper}
-                onClick={() => handleRemoveEmployee(Employee)}
+                onClick={() => handleRemoveEmployee(employee)}
               >
                 <RemoveIcon fill={Colors.red} />
               </div>
@@ -121,7 +128,7 @@ const EmployeeList: React.FC<ComponentProps> = (props) => {
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            Update <b>{selectedEmployee.name}</b>
+            Update <b>{selectedEmployee?.name}</b>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
