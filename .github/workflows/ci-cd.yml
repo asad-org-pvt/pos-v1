@@ -47,13 +47,4 @@ jobs:
           # The example below assumes your repository name is "your-username/your-repo-name".
           # The final image will be named "your-username/your-repo-name:latest".
           # You can replace "your-username" and "your-repo-name" with appropriate names.
-          tags: mhassaankhokhar/stella
-      - name: Deploy
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: 146.190.4.216
-          username: root
-          password: ${{ secrets.COMPUTE_PASS }}
-          port: 22
-          script: |
-            bash /root/deploy.sh
+          tags: mhassaankhokhar/stella:latest
