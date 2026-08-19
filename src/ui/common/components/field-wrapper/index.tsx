@@ -14,7 +14,9 @@ interface ComponentProps {
 const useStylesFromThemeFunction = createUseStyles((theme: ThemeInterface) => {
   return {
     errorMessage: {
-      color: theme.formElement.color.error,
+      color: "var(--error, #dc2626)",
+      fontSize: "12px",
+      marginTop: "4px",
     },
   };
 });

@@ -1,23 +1,21 @@
-import { addEmployee, deleteEmployee, getEmployees, updateEmployee } from "../../data-management/cloud/firebase/firestore/employee";
+import { employeeService } from "../../services/app/EmployeeService";
 
 // get Employees from inventory
 export const getAllEmployees = async () => {
-    const Employees = await getEmployees();
-    return Employees.map(Employee => Employee.data());
-}
+  return await employeeService.getEmployees();
+};
 
 // add Employee in inventory
-export const addOneEmployee = async (Employee: any) => {
-    const EmployeeAdded = await addEmployee(Employee);
-    return EmployeeAdded;
-}
-//delete Employee api
+export const addOneEmployee = async (employee: any) => {
+  return await employeeService.createEmployee(employee);
+};
+
+// delete Employee api
 export const deleteOneEmployee = async (id: string) => {
-    const EmployeeDeleted = await deleteEmployee(id);
-    return EmployeeDeleted;
-}
-//edit Employee api
-export const editEmployee = async (id: string, Employee: any) => {
-    const EmployeeEdited = await updateEmployee(id,Employee);
-    return EmployeeEdited;
-}
+  return await employeeService.deleteEmployee(id);
+};
+
+// edit Employee api
+export const editEmployee = async (id: string, employee: any) => {
+  return await employeeService.updateEmployee(id, employee);
+};

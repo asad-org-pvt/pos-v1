@@ -1,5 +1,4 @@
 import { createUseStyles } from "react-jss";
-import { BLACKS, SKY_BLUES } from "../../common/themes/color-grads";
 
 export const useStylesFromThemeFunction = createUseStyles({
   root: {
@@ -7,19 +6,21 @@ export const useStylesFromThemeFunction = createUseStyles({
     padding: "24px",
     margin: "24px",
     borderRadius: "8px",
+    color: "var(--text-primary, #0f172a)",
   },
   title: {
     fontSize: "36px",
     fontWeight: "bold",
     lineHeight: "32px",
     fontFamily: "sans-serif",
+    color: "var(--text-primary, #0f172a)",
   },
   addBtn: {
     fontSize: "22px",
     fontWeight: "bold",
     lineHeight: "24px",
     fontFamily: "sans-serif",
-    color: "white",
+    color: "var(--primary-contrast, #ffffff)",
     border: "none",
   },
   headerWrapper: {
@@ -36,9 +37,8 @@ export const useStylesFromThemeFunction = createUseStyles({
     gap: "24px",
   },
   listContainer: {
-    // border: "0.5px solid #000000",
     borderRadius: "8px",
-    boxShadow: `10px 10px 5px ${BLACKS[20]}`,
-    backgroundColor: SKY_BLUES[10],
+    boxShadow: "var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.08))",
+    backgroundColor: "var(--bg-paper, #ffffff)",
   },
 });

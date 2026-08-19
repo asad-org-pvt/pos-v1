@@ -1,53 +1,51 @@
 import React, { FC, useState } from "react";
 import {
-  Avatar,
   Box,
   Button,
   CssBaseline,
   Grid,
   Link,
   Paper,
-  Tab,
-  Tabs,
   TextField,
   Typography,
 } from "@mui/material";
 import { Login as LoginIcon } from "@mui/icons-material";
-import { login } from "../../../data-management/cloud/firebase/auth";
-import { addUserInLocalstorage } from "../../../utils/utilFunctions";
+import { authService } from "../../../services/app/AuthService";
 import toast from "react-hot-toast";
-import history, { USER_TYPES } from "../../common/constants";
 import { useNavigate } from "react-router-dom";
 import bg from "../../../assets/bg.jpg";
 
-const Login: FC = (props) => {
+const Login: FC = () => {
   const navigate = useNavigate();
-  const [selectedTab, setSelectedTab] = useState(USER_TYPES.EMPLOYEE);
-  const handleSubmit = (events) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (events: React.FormEvent<HTMLFormElement>) => {
     events.preventDefault();
-    const email = events.target.email.value ?? null;
-    const password = events.target.password.value ?? null;
+    const form = events.currentTarget;
+    const email = (form.elements.namedItem("email") as HTMLInputElement)?.value?.trim();
+    const password = (form.elements.namedItem("password") as HTMLInputElement)?.value;
+
     if (!email) {
       toast.error("Email is required!");
       return;
-    } else if (!password) {
+    }
+    if (!password) {
       toast.error("Password is required!");
       return;
     }
-    login({ email, password })
-      ?.then((res) => {
-        addUserInLocalstorage(res.user);
-        toast.success("Login success");
-        history.push("/");
-        setTimeout(() => window.location.reload(), 50);
-      })
-      .catch((err) => {
-        toast.error("Login failed!");
-      });
+
+    setLoading(true);
+    try {
+      const userCtx = await authService.signIn({ email, password });
+      toast.success(`Login successful! Welcome ${userCtx.email || ""}`);
+      navigate("/organization/pos");
+    } catch (err: any) {
+      toast.error(err.message || "Login failed!");
+    } finally {
+      setLoading(false);
+    }
   };
-  const handleTabChange = (_, value) => {
-    setSelectedTab(value);
-  };
+
   return (
     <Grid
       container
@@ -97,29 +95,6 @@ const Login: FC = (props) => {
             onSubmit={handleSubmit}
             sx={{ mt: 1 }}
           >
-            {/* <Tabs
-              value={selectedTab}
-              onChange={handleTabChange}
-              aria-label="Login as"
-              variant="fullWidth"
-            >
-              <Tab
-                icon={<Badge />}
-                label="Employee"
-                value={USER_TYPES.EMPLOYEE}
-              />
-              <Tab
-                icon={<CorporateFare />}
-                label="Organisation"
-                value={USER_TYPES.ORGANISATION}
-              />
-
-              <Tab
-                icon={<AdminPanelSettings />}
-                label="Admin"
-                value={USER_TYPES.ADMIN}
-              />
-            </Tabs> */}
             <TextField
               margin="normal"
               required
@@ -129,6 +104,7 @@ const Login: FC = (props) => {
               name="email"
               autoComplete="email"
               autoFocus
+              disabled={loading}
             />
             <TextField
               margin="normal"
@@ -139,25 +115,18 @@ const Login: FC = (props) => {
               type="password"
               id="password"
               autoComplete="current-password"
+              disabled={loading}
             />
-            {/* <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            /> */}
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={loading}
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </Button>
             <Grid container>
-              {/* <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid> */}
               <Grid item>
                 <Link
                   style={{ textDecoration: "none", cursor: "pointer" }}
@@ -171,7 +140,6 @@ const Login: FC = (props) => {
                 </Link>
               </Grid>
             </Grid>
-            {/* <Copyright sx={{ mt: 5 }} /> */}
           </Box>
         </Box>
       </Grid>

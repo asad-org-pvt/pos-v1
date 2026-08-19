@@ -6,7 +6,7 @@ import Table from "../../common/components/table";
 import { useStylesFromThemeFunction } from "./SupplierList";
 import toast from "react-hot-toast";
 import { Modal } from "react-bootstrap";
-import { getAllSuppliers, editSupplier } from "../../../parser/supplier";
+import { getAllSuppliers, editSupplier, deleteOneSupplier } from "../../../parser/supplier";
 import SupplierForm from "../supplier-form";
 
 interface ComponentProps {
@@ -24,73 +24,86 @@ const SupplierList: React.FC<ComponentProps> = (props) => {
     "Address",
     "Actions",
   ] as string[]);
-  const [isLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
   const [selectedSupplier, setSelectedSupplier] = React.useState({} as any);
   const [suppliers, setSuppliers] = React.useState(
-    props?.suppliers as any[] | [] as any[]
+    (props?.suppliers as any[]) || []
   );
   const [showSupplierUpdateModal, setShowSupplierUpdateModal] =
     React.useState(false);
 
-  // const handleCloseEditModal = () => setShowEditModal(false);
-  // const handleShowEditModal = (Supplier: any) => {
-  //   setSelectedSupplier(Supplier);
-  //   setShowEditModal(true);
-  // }
+  const loadSuppliers = () => {
+    setIsLoading(true);
+    getAllSuppliers()
+      .then((res) => {
+        setSuppliers(res);
+      })
+      .catch((err) => {
+        toast.error("Failed to load suppliers");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
 
-  const handleRemoveSupplier = (Supplier: any) => {
-    try {
-      if (window.confirm("Are you sure you want to remove this Supplier?")) {
-        // call delete Supplier api here
+  React.useEffect(() => {
+    loadSuppliers();
+  }, []);
 
-        toast.success(`${Supplier.name} removed successfully`);
-      } else {
-        throw new Error("Supplier not removed");
+  const handleRemoveSupplier = async (supplier: any) => {
+    if (window.confirm(`Are you sure you want to remove "${supplier.name}"?`)) {
+      try {
+        await deleteOneSupplier(supplier.id);
+        toast.success(`${supplier.name} removed successfully`);
+        loadSuppliers();
+      } catch (e: any) {
+        toast.error(e.message || "Error while removing supplier");
       }
-    } catch (e) {
-      toast.error(e.message || "Error while removing Supplier");
     }
   };
-  const handleEditSupplier = (Supplier: any) => {
-    setSelectedSupplier(Supplier);
+
+  const handleEditSupplier = (supplier: any) => {
+    setSelectedSupplier(supplier);
     setShowSupplierUpdateModal(true);
   };
+
   const handleUpdate = (updatedSupplier: any) => {
-    // call edit Supplier api here
     editSupplier(updatedSupplier.id, updatedSupplier)
-      .then((res) => {
+      .then(() => {
         toast.success(`${updatedSupplier.name} updated successfully`);
         setShowSupplierUpdateModal(false);
         setSelectedSupplier({} as any);
+        loadSuppliers();
       })
-      .catch((e) => {
-        toast.error(e.message || "Error while updating Supplier");
+      .catch((e: any) => {
+        toast.error(e.message || "Error while updating supplier");
       });
   };
+
   const renderTableData = useMemo(() => {
-    return suppliers?.map((Supplier) => {
+    return suppliers?.map((supplier) => {
       return (
         <tr
-          key={Supplier.id}
-          onDoubleClick={() => handleEditSupplier(Supplier)}
+          key={supplier.id}
+          onDoubleClick={() => handleEditSupplier(supplier)}
         >
-          <td>{Supplier.id}</td>
-          <td>{Supplier.name}</td>
-          <td>{Supplier.state}</td>
-          <td>{Supplier.country}</td>
-          <td>{Supplier.phoneNumber}</td>
-          <td>{Supplier.address}</td>
+          <td>{supplier.id}</td>
+          <td>{supplier.name}</td>
+          <td>{supplier.state}</td>
+          <td>{supplier.country}</td>
+          <td>{supplier.phoneNumber}</td>
+          <td>{supplier.address}</td>
           <td>
             <div className={classes.equallyDistantRow}>
               <div
                 className={classes.iconWrapper}
-                onClick={() => handleEditSupplier(Supplier)}
+                onClick={() => handleEditSupplier(supplier)}
               >
                 <EditIcon fill={Colors.gray} />
               </div>
               <div
                 className={classes.iconWrapper}
-                onClick={() => handleRemoveSupplier(Supplier)}
+                onClick={() => handleRemoveSupplier(supplier)}
               >
                 <RemoveIcon fill={Colors.red} />
               </div>
@@ -100,12 +113,6 @@ const SupplierList: React.FC<ComponentProps> = (props) => {
       );
     });
   }, [suppliers]);
-  React.useEffect(() => {
-    getAllSuppliers().then((res) => {
-      setSuppliers(res);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <>
@@ -121,7 +128,7 @@ const SupplierList: React.FC<ComponentProps> = (props) => {
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            Update <b>{selectedSupplier.name}</b>
+            Update <b>{selectedSupplier?.name}</b>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

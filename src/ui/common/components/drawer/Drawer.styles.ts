@@ -1,21 +1,18 @@
-// colors
 import { createUseStyles } from "react-jss";
-import { COLOR_GRIDS, getComponentColors } from "../../themes/color-grads";
 
-const componentColors = getComponentColors();
 export const useStyles = createUseStyles({
   iconWrapper: {
     height: 64,
     width: 64,
     borderRadius: 4,
-    border: "1px solid",
+    border: "1px solid var(--primary-color, #0d6efd)",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center  ",
-    backgroundColor: componentColors.PRIMARY.BACKGROUND,
-    borderColor: componentColors.PRIMARY.OUTLINE,
+    justifyContent: "center",
+    backgroundColor: "var(--primary-color, #0d6efd)",
+    borderColor: "var(--primary-color, #0d6efd)",
     "& svg path": {
-      fill: componentColors.PRIMARY.TEXT_COLOR,
+      fill: "#ffffff",
     },
   },
   status: {
@@ -41,32 +38,38 @@ export const useStyles = createUseStyles({
     alignItems: "center",
   },
   root: {
-    "& 	.MuiBackdrop-root": {
-      backgroundColor: `${COLOR_GRIDS.BLACKS[50]}59`,
+    "& .MuiBackdrop-root": {
+      backgroundColor: "var(--overlay, rgba(0, 0, 0, 0.5))",
     },
   },
   formRoot: {
-    "&  .MuiDrawer-paper": {
+    "& .MuiDrawer-paper": {
       display: "flex",
       flexDirection: "column",
       justifyContent: "space-between",
       alignItems: "stretch",
+      backgroundColor: "var(--bg-paper, #ffffff)",
+      color: "var(--text-primary, #0f172a)",
     },
   },
   vertical: {
     "& .MuiDrawer-paper": {
-      boxShadow: "none",
+      boxShadow: "var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1))",
       width: "90%",
       maxWidth: 590,
       height: "100%",
+      backgroundColor: "var(--bg-paper, #ffffff)",
+      color: "var(--text-primary, #0f172a)",
     },
   },
   horizontal: {
     "& .MuiDrawer-paper": {
-      boxShadow: "none",
+      boxShadow: "var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1))",
       width: "100%",
       maxHeight: 390,
       height: "90%",
+      backgroundColor: "var(--bg-paper, #ffffff)",
+      color: "var(--text-primary, #0f172a)",
     },
   },
 
@@ -75,9 +78,11 @@ export const useStyles = createUseStyles({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    borderBottom: `1px solid ${COLOR_GRIDS.BLACKS[20]}`,
+    borderBottom: "1px solid var(--border-color, rgba(0, 0, 0, 0.08))",
     height: 80,
     padding: 24,
+    backgroundColor: "var(--bg-paper, #ffffff)",
+    color: "var(--text-primary, #0f172a)",
   },
   bigDrawerHeader: {
     height: 108,
@@ -90,19 +95,20 @@ export const useStyles = createUseStyles({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    borderTop: `1px solid ${COLOR_GRIDS.BLACKS[20]}`,
+    borderTop: "1px solid var(--border-color, rgba(0, 0, 0, 0.08))",
     height: 80,
     padding: 24,
+    backgroundColor: "var(--bg-paper, #ffffff)",
   },
   closeIcon: {
     width: 24,
     height: 24,
-    color: componentColors.PRIMARY.BACKGROUND,
+    color: "var(--primary-color, #0d6efd)",
     cursor: "pointer",
   },
   drawerCancelBtn: {
     padding: 0,
-    color: componentColors.PRIMARY.OUTLINE,
+    color: "var(--text-secondary, #64748b)",
     fontSize: 14,
     fontWeight: 700,
     minWidth: 48,
@@ -110,27 +116,29 @@ export const useStyles = createUseStyles({
   },
   drawerUpdateBtn: {
     height: 48,
-    padding: "12px 20px ",
+    padding: "12px 20px",
     minWidth: 97,
   },
   drawerBody: {
     padding: 40,
+    backgroundColor: "var(--bg-paper, #ffffff)",
+    color: "var(--text-primary, #0f172a)",
   },
   headSubTitle: {
     marginTop: 4,
     lineHeight: "24px",
-    color: COLOR_GRIDS.BLACKS[30],
+    color: "var(--text-secondary, #64748b)",
     display: "inline-block",
   },
   headTitle: {
     margin: 0,
     lineHeight: "32px",
-    color: COLOR_GRIDS.BLACKS[50],
+    color: "var(--text-primary, #0f172a)",
   },
   headTitleSmall: {
     margin: 0,
     lineHeight: "32px",
-    color: COLOR_GRIDS.BLACKS[50],
+    color: "var(--text-primary, #0f172a)",
     fontSize: "18px",
   },
   topContentWrapper: {

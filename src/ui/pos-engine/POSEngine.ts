@@ -1,5 +1,4 @@
 import { createUseStyles } from "react-jss";
-import { Colors } from "../common/colors";
 import { ThemeInterface } from "../../interfaces/theme";
 
 export interface ComponentProps {
@@ -15,34 +14,47 @@ export const useStylesFromThemeFunction = createUseStyles(
     return {
       container: {
         width: "100%",
-        height: "100%",
+        height: "100vh",
+        maxHeight: "100vh",
         display: "flex",
         flexDirection: "row",
-        backgroundColor: Colors.white,
+        backgroundColor: "var(--bg-default, #f8fafc)",
+        color: "var(--text-primary, #0f172a)",
+        overflow: "hidden",
+        boxSizing: "border-box",
+        padding: "6px",
+        gap: "6px",
       },
       innerContainerLeft: {
-        width: "70%",
-        minWidth: "fit-content",
+        flex: "1 1 60%",
+        minWidth: "460px",
+        height: "calc(100vh - 12px)",
+        maxHeight: "calc(100vh - 12px)",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "space-between",
+        alignItems: "stretch",
+        justifyContent: "flex-start",
         padding: "10px",
-        margin: "2px",
         borderRadius: "10px",
-        backgroundColor: Colors.blueGrayLight,
+        backgroundColor: "var(--bg-surface, #f1f5f9)",
+        border: "1px solid var(--border-color, rgba(0,0,0,0.06))",
+        gap: "8px",
+        overflowY: "auto",
+        boxSizing: "border-box",
       },
       innerContainerRight: {
-        width: "30%",
-        minWidth: "fit-content",
+        flex: "0 0 390px",
+        width: "390px",
+        maxWidth: "420px",
+        height: "calc(100vh - 12px)",
+        maxHeight: "calc(100vh - 12px)",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "10px",
-        margin: "2px",
+        alignItems: "stretch",
+        justifyContent: "flex-start",
+        padding: "0",
         borderRadius: "10px",
-        backgroundColor: Colors.blueGrayLight,
+        boxSizing: "border-box",
       },
       productSearchContainer: {
         width: "100%",
@@ -56,19 +68,23 @@ export const useStylesFromThemeFunction = createUseStyles(
         padding: "5px",
         margin: "5px",
         borderRadius: "5px",
-        backgroundColor: Colors.blueGrayLightDim,
+        backgroundColor: "var(--bg-paper, #ffffff)",
+        border: "1px solid var(--border-color, rgba(0,0,0,0.06))",
       },
       productSuggestionContainer: {
         width: "100%",
-        position: "relative",
+        flex: "1 1 0",
+        minHeight: "150px",
         display: "flex",
-        flexDirection: "row",
-        height: "100%",
-        alignItems: "flex-start",
-        justifyContent: "space-between",
-        minHeight: "fit-content",
-        padding: "10px",
-        backgroundColor: Colors.blueGrayLight,
+        flexDirection: "column",
+        alignItems: "stretch",
+        justifyContent: "flex-start",
+        padding: "8px",
+        borderRadius: "8px",
+        backgroundColor: "var(--bg-paper, #ffffff)",
+        border: "1px solid var(--border-color, rgba(0,0,0,0.06))",
+        overflowY: "auto",
+        boxSizing: "border-box",
       },
       addedProductsContainer: {
         width: "100%",
@@ -77,7 +93,7 @@ export const useStylesFromThemeFunction = createUseStyles(
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        backgroundColor: Colors.blueGrayLight,
+        backgroundColor: "var(--bg-surface, #f1f5f9)",
       },
       totalBillContainer: {
         width: "100%",
@@ -88,7 +104,7 @@ export const useStylesFromThemeFunction = createUseStyles(
         justifyContent: "space-between",
         borderRadius: "5px",
         padding: "5px",
-        backgroundColor: Colors.blueGrayLightDim,
+        backgroundColor: "var(--bg-paper, #ffffff)",
       },
       row: {
         display: "flex",
@@ -123,7 +139,7 @@ export const useStylesFromThemeFunction = createUseStyles(
         cursor: "pointer",
       },
       colorRed: {
-        color: Colors.red,
+        color: "var(--error, #dc2626)",
       },
       qualtityButtonWrapper: {
         width: "30px",
@@ -159,21 +175,22 @@ export const customStyles = ({
 }: CustomStyle) => {
   const color = () => {
     if (isTouched && !isError) {
-      return Colors.successTextGreen;
+      return "var(--success, #16a34a)";
     }
     if (isError) {
-      return Colors.red;
+      return "var(--error, #dc2626)";
     }
     if (isFocus) {
-      return Colors.purple;
+      return "var(--primary-color, #0d6efd)";
     }
 
-    return Colors.grayLight;
+    return "var(--border-color, rgba(0,0,0,0.15))";
   };
   return {
     control: (base: any, state: { isFocused: any }) => ({
       ...base,
-      background: variant === "primary" ? "white" : Colors.blueGrayLight,
+      background: variant === "primary" ? "var(--input-bg, #ffffff)" : "var(--bg-surface, #f1f5f9)",
+      color: "var(--text-primary, #0f172a)",
       borderRadius: 10,
       height: 42,
       border: `1px solid ${color()}`,
@@ -183,35 +200,41 @@ export const customStyles = ({
       ...base,
       padding: 0,
       borderRadius: 10,
+      backgroundColor: "var(--bg-paper, #ffffff)",
+      color: "var(--text-primary, #0f172a)",
       "&:focus": {
         outline: "0px",
         borderRadius: "10px",
-        border: `${Colors.purple} 1px solid`,
-        backgroundColor: Colors.white,
+        border: `var(--primary-color, #0d6efd) 1px solid`,
+        backgroundColor: "var(--bg-paper, #ffffff)",
       },
     }),
     menu: (base: any) => ({
       ...base,
       borderRadius: 10,
+      backgroundColor: "var(--bg-paper, #ffffff)",
+      border: "1px solid var(--border-color, rgba(0,0,0,0.12))",
     }),
     dropdownIndicator: (base: any) => ({
       ...base,
-      color: Colors.blueGrayDark,
+      color: "var(--text-secondary, #64748b)",
       "&:hover": {
-        color: Colors.blueGrayDark,
+        color: "var(--text-primary, #0f172a)",
       },
     }),
     option: (base: any, state: { isSelected: any }) => ({
       ...base,
-      backgroundColor: state.isSelected && Colors.purple,
-      "&:hover": { backgroundColor: !state.isSelected && Colors.blueGrayLight },
+      backgroundColor: state.isSelected ? "var(--primary-color, #0d6efd)" : "transparent",
+      color: state.isSelected ? "#ffffff" : "var(--text-primary, #0f172a)",
+      "&:hover": { backgroundColor: !state.isSelected && "var(--bg-surface-hover, rgba(0,0,0,0.06))" },
       ":active": {
         ...base[":active"],
-        backgroundColor: Colors.blueGrayLight,
+        backgroundColor: "var(--bg-surface-hover, rgba(0,0,0,0.06))",
       },
     }),
     valueContainer: (base: any) => ({
       ...base,
+      color: "var(--text-primary, #0f172a)",
     }),
   };
 };

@@ -1,6 +1,5 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import {
-  Avatar,
   Box,
   Button,
   CssBaseline,
@@ -11,52 +10,34 @@ import {
   Typography,
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
-import { register } from "../../../data-management/cloud/firebase/auth";
-import {
-  addUserInLocalstorage,
-  isEmailValid,
-  isStrongPassword,
-} from "../../../utils/utilFunctions";
+import { authService } from "../../../services/app/AuthService";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import bg from "../../../assets/bg.jpg";
 
-const Signup: FC = (props) => {
+const Signup: FC = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (events) => {
+  const handleSubmit = async (events: React.FormEvent<HTMLFormElement>) => {
     events.preventDefault();
-    const email = events.target.email.value ?? null;
-    const password = events.target.password.value ?? null;
-    const confirmPassword = events.target.confirmPassword.value ?? null;
-    if (!email) {
-      toast.error("Email is required!");
-      return;
-    } else if (!password) {
-      toast.error("Password is required!");
-      return;
-    } else if (!confirmPassword) {
-      toast.error("Confirm password is required!");
-      return;
-    } else if (!isEmailValid(email)) {
-      toast.error("Invalid email");
-      return;
-    } else if (!isStrongPassword(password)) {
-      toast.error("Weak password");
-      return;
-    } else if (password !== confirmPassword) {
-      toast.error("Confirm password don't match");
-      return;
+    const form = events.currentTarget;
+    const email = (form.elements.namedItem("email") as HTMLInputElement)?.value?.trim();
+    const password = (form.elements.namedItem("password") as HTMLInputElement)?.value;
+    const confirmPassword = (form.elements.namedItem("confirmPassword") as HTMLInputElement)?.value;
+
+    setLoading(true);
+    try {
+      const userCtx = await authService.signUp({ email, password, confirmPassword });
+      toast.success(`Organization registration successful! Welcome ${userCtx.email || ""}`);
+      navigate("/organization/pos");
+    } catch (err: any) {
+      toast.error(err.message || "Registration failed!");
+    } finally {
+      setLoading(false);
     }
-    register({ email, password, confirmPassword })
-      ?.then((res) => {
-        addUserInLocalstorage(res.user);
-        toast.success("User registeration success ");
-      })
-      .catch((err) => {
-        toast.error("Registration failed!");
-      });
   };
+
   return (
     <Grid
       container
@@ -115,6 +96,7 @@ const Signup: FC = (props) => {
               name="email"
               autoComplete="email"
               autoFocus
+              disabled={loading}
             />
             <TextField
               margin="normal"
@@ -125,6 +107,7 @@ const Signup: FC = (props) => {
               type="password"
               id="password"
               autoComplete="current-password"
+              disabled={loading}
             />
             <TextField
               margin="normal"
@@ -135,18 +118,16 @@ const Signup: FC = (props) => {
               type="password"
               id="confirmPassword"
               autoComplete="current-password"
+              disabled={loading}
             />
-            {/* <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            /> */}
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={loading}
             >
-              Register
+              {loading ? "Registering..." : "Register"}
             </Button>
 
             <Grid container>
@@ -163,7 +144,6 @@ const Signup: FC = (props) => {
                 </Link>
               </Grid>
             </Grid>
-            {/* <Copyright sx={{ mt: 5 }} /> */}
           </Box>
         </Box>
       </Grid>
