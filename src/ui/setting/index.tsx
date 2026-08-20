@@ -11,7 +11,7 @@ import ProfileSettings from "./profile";
 
 export const Setting: React.FC = () => {
   return (
-    <Box sx={{ p: 3, maxWidth: 1200, margin: "0 auto" }}>
+    <Box sx={{ p: { xs: 2, md: 3 }, maxWidth: 1200, margin: "0 auto", pb: 12 }}>
       <Paper elevation={0} sx={{ p: 2, mb: 3, borderRadius: 2, bgcolor: "background.paper", border: "1px solid", borderColor: "divider" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
           <SettingsIcon color="primary" sx={{ fontSize: 32 }} />

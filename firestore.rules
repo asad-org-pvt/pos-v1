@@ -24,33 +24,30 @@ service cloud.firestore {
 
     function isValidMember() {
       return isAuthenticated() && (
-        isPlatformAdmin() || (
-          getTenant() != null &&
-          getRole() in ['cashier', 'manager', 'admin']
-        )
+        isPlatformAdmin() || 
+        getTenant() == null ||
+        (getTenant() != null && getRole() in ['cashier', 'manager', 'admin'])
       );
     }
 
     function isManager() {
       return isAuthenticated() && (
-        isPlatformAdmin() || (
-          getTenant() != null &&
-          getRole() in ['manager', 'admin']
-        )
+        isPlatformAdmin() || 
+        getTenant() == null ||
+        (getTenant() != null && getRole() in ['manager', 'admin'])
       );
     }
 
     function isAdmin() {
       return isAuthenticated() && (
-        isPlatformAdmin() || (
-          getTenant() != null &&
-          getRole() == 'admin'
-        )
+        isPlatformAdmin() || 
+        getTenant() == null ||
+        (getTenant() != null && getRole() == 'admin')
       );
     }
 
     function matchesSuffix(name, suffix) {
-      return isPlatformAdmin() || (getTenant() != null && name == getTenant() + '-' + suffix);
+      return isPlatformAdmin() || getTenant() == null || (getTenant() != null && name == getTenant() + '-' + suffix) || name == suffix;
     }
 
     // ==========================================
@@ -62,11 +59,16 @@ service cloud.firestore {
       allow read, write: if isPlatformAdmin();
     }
 
+    // Global settings collection
+    match /settings/{docId} {
+      allow read, write: if isAuthenticated();
+    }
+
     // Organization profiles
     match /organisations/{orgId} {
-      allow read: if isAuthenticated() && (isPlatformAdmin() || getTenant() == orgId);
-      allow create: if isPlatformAdmin();
-      allow update: if isAuthenticated() && (isPlatformAdmin() || (getTenant() == orgId && getRole() == 'admin'));
+      allow read: if isAuthenticated() && (isPlatformAdmin() || getTenant() == null || getTenant() == orgId);
+      allow create: if isPlatformAdmin() || getTenant() == null;
+      allow update: if isAuthenticated() && (isPlatformAdmin() || getTenant() == null || (getTenant() == orgId && getRole() == 'admin'));
       allow delete: if isPlatformAdmin();
     }
 

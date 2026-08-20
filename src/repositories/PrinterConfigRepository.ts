@@ -1,3 +1,4 @@
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { FirestoreBaseRepository } from "./base/FirestoreBaseRepository";
 import {
   PrinterConfig,
@@ -27,7 +28,10 @@ export class PrinterConfigRepository extends FirestoreBaseRepository<
     // 1. Try local storage cache for terminal-specific hardware setup
     if (typeof localStorage !== "undefined") {
       try {
-        const cached = localStorage.getItem(`${LOCAL_STORAGE_KEY_PREFIX}${tId}`);
+        const cached =
+          localStorage.getItem(`${LOCAL_STORAGE_KEY_PREFIX}${tId}`) ||
+          localStorage.getItem(`${LOCAL_STORAGE_KEY_PREFIX}default`) ||
+          localStorage.getItem("pos_printer_config");
         if (cached) {
           const parsed = JSON.parse(cached);
           const validation = PrinterConfigSchema.safeParse(parsed);
@@ -45,6 +49,23 @@ export class PrinterConfigRepository extends FirestoreBaseRepository<
         const defaultOne = all.find((p) => p.isDefault) || all[0];
         this.cacheLocalConfig(defaultOne, tId);
         return defaultOne;
+      }
+
+      // Check /users/${userId}
+      const userId = typeof localStorage !== "undefined" ? localStorage.getItem("uid") : undefined;
+      if (userId) {
+        const userDocRef = doc(this.getDb(), "users", userId);
+        const snap = await getDoc(userDocRef);
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data?.printerConfig) {
+            const val = PrinterConfigSchema.safeParse(data.printerConfig);
+            if (val.success) {
+              this.cacheLocalConfig(val.data, tId);
+              return val.data;
+            }
+          }
+        }
       }
     } catch (_) {}
 
@@ -78,9 +99,10 @@ export class PrinterConfigRepository extends FirestoreBaseRepository<
    */
   async saveConfig(input: CreatePrinterConfigInput, tenantId?: string): Promise<PrinterConfig> {
     const tId = this.resolveTenantId(tenantId);
+    const targetId = input.id || "default-printer";
     const parseResult = PrinterConfigSchema.safeParse({
       ...input,
-      id: input.id || `printer_${Date.now()}`,
+      id: targetId,
       tenantId: tId,
       createdAt: input.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -97,15 +119,20 @@ export class PrinterConfigRepository extends FirestoreBaseRepository<
     // Cache locally
     this.cacheLocalConfig(validConfig, tId);
 
-    // Save to Firestore tenant collection
-    try {
-      if (input.id) {
-        await this.update(input.id, validConfig, tId);
-      } else {
-        await this.create(validConfig, tId);
+    // Save to Firestore tenant collection and user profile
+    if (typeof window !== "undefined" && typeof navigator !== "undefined" && navigator.onLine) {
+      try {
+        const docRef = doc(this.getDb(), this.getCollectionName(tId), targetId);
+        setDoc(docRef, validConfig, { merge: true }).catch(() => {});
+
+        const userId = typeof localStorage !== "undefined" ? localStorage.getItem("uid") : undefined;
+        if (userId) {
+          const userDocRef = doc(this.getDb(), "users", userId);
+          setDoc(userDocRef, { printerConfig: validConfig, updatedAt: new Date().toISOString() }, { merge: true }).catch(() => {});
+        }
+      } catch (_) {
+        // Local storage cache serves as reliable local terminal config even if offline
       }
-    } catch (_) {
-      // Local storage cache serves as reliable local terminal config even if offline
     }
 
     return validConfig;
