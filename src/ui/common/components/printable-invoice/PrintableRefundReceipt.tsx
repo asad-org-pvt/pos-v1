@@ -88,6 +88,7 @@ export const PrintableRefundReceipt: React.FC<PrintableRefundReceiptProps> = ({
       {/* Printable Receipt Container */}
       <Box
         id="printable-refund-receipt"
+        className="printable-content"
         sx={{
           maxWidth: "380px",
           margin: "0 auto",

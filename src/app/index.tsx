@@ -2,6 +2,7 @@ import React from "react";
 import { Toaster } from "react-hot-toast";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../theme/bootstrap-theme-override.css";
+import "../theme/print.css";
 import AppLayout from "../ui/app-layout";
 import { Provider } from "react-redux";
 import store from "../redux/store/store";

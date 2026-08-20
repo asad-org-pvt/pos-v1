@@ -30,8 +30,8 @@ export class SettingsService {
   /**
    * Retrieve user personalization settings
    */
-  async getUserSettings(userId: string): Promise<UserSettings> {
-    return this.repo.getUserSettings(userId);
+  async getUserSettings(userId: string, tenantId?: string): Promise<UserSettings> {
+    return this.repo.getUserSettings(userId, tenantId);
   }
 
   /**
@@ -39,9 +39,10 @@ export class SettingsService {
    */
   async updateUserSettings(
     userId: string,
-    settings: Partial<UserSettings>
+    settings: Partial<UserSettings>,
+    tenantId?: string
   ): Promise<UserSettings> {
-    return this.repo.saveUserSettings(userId, settings);
+    return this.repo.saveUserSettings(userId, settings, tenantId);
   }
 
   /**

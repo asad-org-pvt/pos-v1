@@ -1,0 +1,139 @@
+/* ==========================================================================
+   PRINT ISOLATION STYLESHEET
+   Ensures ONLY the target receipt / report is printed, isolating it from
+   the POS application UI, modals, navigation, buttons, and backgrounds.
+   ========================================================================== */
+
+@media print {
+  /* Page Setup & Margins */
+  @page {
+    size: auto;
+    margin: 0mm !important;
+  }
+
+  /* Reset document root and background */
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Hide entire UI tree by default */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Hide common UI chrome, headers, footers, sidebars, alerts, toasts, backdrops */
+  .no-print,
+  .no-print *,
+  .modal-backdrop,
+  .modal-header,
+  .modal-footer,
+  .btn-close,
+  .MuiDrawer-root,
+  .toast,
+  [role="status"],
+  nav,
+  header,
+  aside,
+  button,
+  .MuiButton-root,
+  .MuiBackdrop-root {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Remove modal container layout constraints when printing */
+  .modal {
+    position: static !important;
+    display: block !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .modal-dialog {
+    position: static !important;
+    display: block !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .modal-content {
+    position: static !important;
+    display: block !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .modal-body {
+    position: static !important;
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Make ONLY the printable receipts and their descendents visible */
+  #printable-receipt,
+  #printable-receipt *,
+  #printable-refund-receipt,
+  #printable-refund-receipt *,
+  #printable-shift-report,
+  #printable-shift-report *,
+  .printable-content,
+  .printable-content * {
+    visibility: visible !important;
+  }
+
+  /* Position the printable element cleanly at the top of the printed page */
+  #printable-receipt,
+  #printable-refund-receipt,
+  #printable-shift-report,
+  .printable-content {
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: 0 !important;
+    width: 80mm !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 4mm !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    z-index: 9999999 !important;
+    overflow: visible !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Ensure crisp black text on white backgrounds */
+  #printable-receipt *,
+  #printable-refund-receipt *,
+  #printable-shift-report *,
+  .printable-content * {
+    color: #000000 !important;
+    background-color: transparent !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+  }
+}

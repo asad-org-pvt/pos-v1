@@ -92,6 +92,7 @@ export const PrintableReceipt: React.FC<PrintableReceiptProps> = ({
       {/* Printable Receipt Container (Formatted for 80mm thermal & standard paper) */}
       <Box
         id="printable-receipt"
+        className="printable-content"
         sx={{
           maxWidth: "380px",
           margin: "0 auto",

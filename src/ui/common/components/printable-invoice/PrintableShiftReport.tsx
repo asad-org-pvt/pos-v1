@@ -48,6 +48,7 @@ export const PrintableShiftReport: React.FC<PrintableShiftReportProps> = ({
       {/* Printable Report Container */}
       <Box
         id="printable-shift-report"
+        className="printable-content"
         sx={{
           maxWidth: "380px",
           margin: "0 auto",

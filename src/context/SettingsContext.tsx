@@ -73,8 +73,15 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const org = await settingsService.getOrganizationSettings(tenantId);
       setOrganizationSettings(org);
 
-      if (user?.uid) {
-        const u = await settingsService.getUserSettings(user.uid);
+      const activeUserId =
+        user?.uid ||
+        (typeof localStorage !== "undefined" ? localStorage.getItem("uid") || localStorage.getItem("email") : undefined);
+
+      if (activeUserId) {
+        const u = await settingsService.getUserSettings(activeUserId, tenantId);
+        setUserSettings(u);
+      } else {
+        const u = await settingsService.getUserSettings("anonymous", tenantId);
         setUserSettings(u);
       }
 
@@ -99,8 +106,13 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const updateUserSettings = async (settings: Partial<UserSettings>): Promise<UserSettings> => {
-    if (!user?.uid) return userSettings;
-    const updated = await settingsService.updateUserSettings(user.uid, settings);
+    const activeUserId =
+      user?.uid ||
+      (typeof localStorage !== "undefined"
+        ? localStorage.getItem("uid") || localStorage.getItem("email") || "anonymous"
+        : "anonymous");
+
+    const updated = await settingsService.updateUserSettings(activeUserId, settings, tenantId);
     setUserSettings(updated);
     return updated;
   };
