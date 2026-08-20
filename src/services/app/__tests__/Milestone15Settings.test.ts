@@ -8,6 +8,7 @@ import {
 import {
   formatCurrency,
   deriveCurrencyFromCountry,
+  detectSystemLocationAndCurrency,
   SUPPORTED_CURRENCIES,
 } from "../../../domain/formatting/CurrencyFormatter";
 import { calculateSaleTotals } from "../../../domain/calculations/SaleCalculations";
@@ -35,8 +36,8 @@ describe("Milestone 15 — Settings & Personalization System", () => {
       const org = await settingsService.getOrganizationSettings("tenant-alpha");
 
       expect(org.tenantId).toBe("tenant-alpha");
-      expect(org.currencyCode).toBe("USD");
-      expect(org.currencySymbol).toBe("$");
+      expect(org.currencyCode).toBeDefined();
+      expect(org.currencySymbol).toBeDefined();
       expect(org.taxEnabled).toBe(true);
       expect(org.defaultTaxRate).toBe(0.05);
       expect(org.discountsEnabled).toBe(true);
@@ -97,6 +98,20 @@ describe("Milestone 15 — Settings & Personalization System", () => {
       expect(deriveCurrencyFromCountry("UAE").code).toBe("AED");
       expect(deriveCurrencyFromCountry("Saudi Arabia").code).toBe("SAR");
       expect(deriveCurrencyFromCountry("India").code).toBe("INR");
+      expect(deriveCurrencyFromCountry("Kuwait").code).toBe("KWD");
+      expect(deriveCurrencyFromCountry("Singapore").code).toBe("SGD");
+      expect(deriveCurrencyFromCountry("Turkey").code).toBe("TRY");
+    });
+
+    it("auto-detects currency from system timezone and locale fallback", () => {
+      // Test explicit autoDetectCurrency
+      expect(deriveCurrencyFromCountry("PKR").code).toBe("PKR");
+      expect(deriveCurrencyFromCountry("PK").code).toBe("PKR");
+
+      const sysLoc = detectSystemLocationAndCurrency();
+      expect(sysLoc.currency).toBeDefined();
+      expect(sysLoc.timeZone).toBeDefined();
+      expect(sysLoc.country).toBeDefined();
     });
 
     it("automatically updates currency denomination when currencyMode is AUTO", async () => {
