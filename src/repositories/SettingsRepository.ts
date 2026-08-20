@@ -1,5 +1,5 @@
 import { FirestoreBaseRepository } from "./base/FirestoreBaseRepository";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { getRuntimeTenantId } from "../context/tenantRuntime";
 import {
   OrganizationSettings,
@@ -146,11 +146,24 @@ export class SettingsRepository extends FirestoreBaseRepository<
   /**
    * Get user personalization settings
    */
-  async getUserSettings(userId: string): Promise<UserSettings> {
-    if (!userId) {
+  async getUserSettings(userId: string, tenantId?: string): Promise<UserSettings> {
+    if (!userId || userId === "anonymous") {
+      if (typeof localStorage !== "undefined") {
+        try {
+          const cached = localStorage.getItem(`${LOCAL_STORAGE_USER_KEY}anonymous`);
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            const val = UserSettingsSchema.safeParse(parsed);
+            if (val.success) return val.data;
+          }
+        } catch (_) {}
+      }
       return UserSettingsSchema.parse({ userId: "anonymous" });
     }
 
+    const tId = this.resolveTenant(tenantId);
+
+    // 1. Try local storage cache for instant retrieval
     if (typeof localStorage !== "undefined") {
       try {
         const cached = localStorage.getItem(`${LOCAL_STORAGE_USER_KEY}${userId}`);
@@ -161,24 +174,53 @@ export class SettingsRepository extends FirestoreBaseRepository<
       } catch (_) {}
     }
 
+    // 2. Query Firestore database if in online browser environment
+    if (typeof window !== "undefined" && typeof navigator !== "undefined" && navigator.onLine) {
+      try {
+        const docData = await this.getById(`user_${userId}`, tId);
+        if (docData) {
+          const val = UserSettingsSchema.safeParse(docData);
+          if (val.success) {
+            this.cacheLocalUserSettings(val.data, userId);
+            return val.data;
+          }
+        }
+      } catch (_) {}
+    }
+
     return UserSettingsSchema.parse({ userId });
   }
 
   /**
-   * Save user personalization settings
+   * Save user personalization settings to Firestore database and local cache
    */
-  async saveUserSettings(userId: string, settings: Partial<UserSettings>): Promise<UserSettings> {
-    const existing = await this.getUserSettings(userId);
+  async saveUserSettings(
+    userId: string,
+    settings: Partial<UserSettings>,
+    tenantId?: string
+  ): Promise<UserSettings> {
+    const tId = this.resolveTenant(tenantId);
+    const existing = await this.getUserSettings(userId, tId);
     const updated = UserSettingsSchema.parse({
       ...existing,
       ...settings,
-      userId,
+      userId: userId || "anonymous",
       updatedAt: new Date().toISOString(),
     });
 
-    if (typeof localStorage !== "undefined") {
+    // 1. Cache to local storage immediately
+    this.cacheLocalUserSettings(updated, userId || "anonymous");
+
+    // 2. Persist to Firestore DB asynchronously if online and authenticated user
+    if (userId && userId !== "anonymous" && typeof window !== "undefined" && typeof navigator !== "undefined" && navigator.onLine) {
       try {
-        localStorage.setItem(`${LOCAL_STORAGE_USER_KEY}${userId}`, JSON.stringify(updated));
+        // Persist to tenant settings collection: doc id "user_" + userId
+        const docRef = doc(this.getDb(), this.getCollectionName(tId), `user_${userId}`);
+        setDoc(docRef, updated, { merge: true }).catch(() => {});
+
+        // Also persist to /users/${userId} document for profile consistency
+        const userDocRef = doc(this.getDb(), "users", userId);
+        setDoc(userDocRef, { userSettings: updated, updatedAt: new Date().toISOString() }, { merge: true }).catch(() => {});
       } catch (_) {}
     }
 
@@ -225,6 +267,14 @@ export class SettingsRepository extends FirestoreBaseRepository<
     if (typeof localStorage !== "undefined") {
       try {
         localStorage.setItem(`${LOCAL_STORAGE_ORG_KEY}${tenantId}`, JSON.stringify(settings));
+      } catch (_) {}
+    }
+  }
+
+  private cacheLocalUserSettings(settings: UserSettings, userId: string): void {
+    if (typeof localStorage !== "undefined") {
+      try {
+        localStorage.setItem(`${LOCAL_STORAGE_USER_KEY}${userId}`, JSON.stringify(settings));
       } catch (_) {}
     }
   }

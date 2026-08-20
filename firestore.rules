@@ -70,9 +70,12 @@ service cloud.firestore {
       allow delete: if isPlatformAdmin();
     }
 
-    // Legacy users collection (read-only for authenticated tenant members of own record)
+    // Users collection (read and write for authenticated tenant members of own record)
     match /users/{userId} {
       allow read, write: if isAuthenticated() && (isPlatformAdmin() || request.auth.uid == userId);
+      match /{allSubcollections=**} {
+        allow read, write: if isAuthenticated() && (isPlatformAdmin() || request.auth.uid == userId);
+      }
     }
 
     // ==========================================
@@ -110,7 +113,8 @@ service cloud.firestore {
           matchesSuffix(collectionName, 'customers') ||
           matchesSuffix(collectionName, 'categories') ||
           matchesSuffix(collectionName, 'suppliers') ||
-          matchesSuffix(collectionName, 'idempotency')
+          matchesSuffix(collectionName, 'idempotency') ||
+          (matchesSuffix(collectionName, 'settings') && (docId == 'user_' + request.auth.uid || docId == request.auth.uid))
         )) ||
         (isManager() && (
           matchesSuffix(collectionName, 'products') ||
@@ -127,7 +131,8 @@ service cloud.firestore {
           matchesSuffix(collectionName, 'shifts') ||
           matchesSuffix(collectionName, 'customers') ||
           matchesSuffix(collectionName, 'categories') ||
-          matchesSuffix(collectionName, 'suppliers')
+          matchesSuffix(collectionName, 'suppliers') ||
+          (matchesSuffix(collectionName, 'settings') && (docId == 'user_' + request.auth.uid || docId == request.auth.uid))
         )) ||
         (isManager() && (
           matchesSuffix(collectionName, 'products') ||
