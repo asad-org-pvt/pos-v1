@@ -17,9 +17,23 @@ import {
   CircularProgress,
   Chip,
 } from "@mui/material";
-import { PointOfSale, Save as SaveIcon, AttachMoney, Percent, ShoppingCart, AssignmentReturn } from "@mui/icons-material";
+import {
+  PointOfSale,
+  Save as SaveIcon,
+  AttachMoney,
+  Percent,
+  ShoppingCart,
+  AssignmentReturn,
+  LocationOn,
+  MyLocation,
+} from "@mui/icons-material";
 import { useSettings } from "../../../context/SettingsContext";
-import { SUPPORTED_CURRENCIES, deriveCurrencyFromCountry } from "../../../domain/formatting/CurrencyFormatter";
+import {
+  SUPPORTED_CURRENCIES,
+  autoDetectCurrency,
+  getDetectedLocationInfo,
+  formatCurrency,
+} from "../../../domain/formatting/CurrencyFormatter";
 import toast from "react-hot-toast";
 
 export const PosBusinessSettings: React.FC = () => {
@@ -28,6 +42,22 @@ export const PosBusinessSettings: React.FC = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    // If currency mode is AUTO and country was either empty or default, run auto-detection
+    if (organizationSettings.currencyMode === "AUTO") {
+      const loc = getDetectedLocationInfo();
+      // If current settings have default/stale USD while real environment is different
+      if ((!organizationSettings.country || organizationSettings.country === "United States") && loc.countryGuess !== "United States") {
+        setFormData({
+          ...organizationSettings,
+          country: loc.countryGuess,
+          countryCode: loc.countryCode,
+          currencyCode: loc.detectedCode,
+          currencySymbol: loc.detectedSymbol,
+          decimalPrecision: loc.detectedCode === "JPY" || loc.detectedCode === "IDR" || loc.detectedCode === "VND" ? 0 : 2,
+        });
+        return;
+      }
+    }
     setFormData(organizationSettings);
   }, [organizationSettings]);
 
@@ -83,22 +113,26 @@ export const PosBusinessSettings: React.FC = () => {
                   onChange={(e) => {
                     const mode = e.target.value as "MANUAL" | "AUTO";
                     if (mode === "AUTO") {
-                      const derived = deriveCurrencyFromCountry(formData.country || "United States");
+                      const locInfo = getDetectedLocationInfo();
+                      const detected = autoDetectCurrency(formData.country && formData.country !== "United States" ? formData.country : undefined);
                       setFormData({
                         ...formData,
                         currencyMode: "AUTO",
-                        currencyCode: derived.code,
-                        currencySymbol: derived.symbol,
-                        decimalPrecision: derived.decimalPrecision,
-                        symbolPosition: derived.symbolPosition,
+                        currencyCode: detected.code,
+                        currencySymbol: detected.symbol,
+                        decimalPrecision: detected.decimalPrecision,
+                        symbolPosition: detected.symbolPosition,
+                        country: (formData.country && formData.country !== "United States") ? formData.country : locInfo.countryGuess,
+                        countryCode: locInfo.countryCode,
                       });
+                      toast.success(`Auto-detected: ${detected.name} (${detected.code} - ${detected.symbol.trim()})`);
                     } else {
                       setFormData({ ...formData, currencyMode: "MANUAL" });
                     }
                   }}
                 >
-                  <MenuItem value="MANUAL">Manual Selection</MenuItem>
-                  <MenuItem value="AUTO">Auto (From Country Location)</MenuItem>
+                  <MenuItem value="MANUAL">Manual Currency Selection</MenuItem>
+                  <MenuItem value="AUTO">Auto (System Location / Country)</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -110,6 +144,7 @@ export const PosBusinessSettings: React.FC = () => {
                   labelId="currency-code-label"
                   label="Display Currency"
                   value={formData.currencyCode}
+                  disabled={formData.currencyMode === "AUTO"}
                   onChange={(e) => {
                     const code = e.target.value;
                     const details = SUPPORTED_CURRENCIES[code];
@@ -142,8 +177,98 @@ export const PosBusinessSettings: React.FC = () => {
                 value={formData.currencySymbol}
                 onChange={(e) => setFormData({ ...formData, currencySymbol: e.target.value })}
                 disabled={formData.currencyMode === "AUTO"}
+                helperText={formData.currencyMode === "AUTO" ? "Managed automatically in Auto Mode" : "Customize display prefix/suffix"}
               />
             </Grid>
+
+            {/* In Auto Mode, provide Country input + auto-detect details */}
+            {formData.currencyMode === "AUTO" && (
+              <>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Store Country Location"
+                    value={formData.country || ""}
+                    placeholder="e.g. Pakistan, United Arab Emirates, United Kingdom, USA"
+                    onChange={(e) => {
+                      const newCountry = e.target.value;
+                      const derived = autoDetectCurrency(newCountry);
+                      setFormData({
+                        ...formData,
+                        country: newCountry,
+                        currencyCode: derived.code,
+                        currencySymbol: derived.symbol,
+                        decimalPrecision: derived.decimalPrecision,
+                        symbolPosition: derived.symbolPosition,
+                      });
+                    }}
+                    helperText="Type any country to instantly resolve its official currency"
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Box
+                    sx={{
+                      p: 1.5,
+                      bgcolor: "action.hover",
+                      border: "1px solid",
+                      borderColor: "primary.light",
+                      borderRadius: 1.5,
+                      display: "flex",
+                      flexWrap: "wrap",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: 1,
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <LocationOn color="primary" fontSize="small" />
+                      <Box>
+                        <Typography variant="body2" fontWeight="bold">
+                          {formData.currencyCode} ({formData.currencySymbol.trim()})
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
+                          Zone: {getDetectedLocationInfo().timeZone} ({getDetectedLocationInfo().source})
+                        </Typography>
+                      </Box>
+                    </Box>
+
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Chip
+                        label={`Preview: ${formatCurrency(1250.5, formData)}`}
+                        color="primary"
+                        variant="outlined"
+                        size="small"
+                        sx={{ fontWeight: "bold" }}
+                      />
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        startIcon={<MyLocation />}
+                        onClick={() => {
+                          const loc = getDetectedLocationInfo();
+                          const detected = autoDetectCurrency();
+                          setFormData({
+                            ...formData,
+                            currencyMode: "AUTO",
+                            currencyCode: detected.code,
+                            currencySymbol: detected.symbol,
+                            decimalPrecision: detected.decimalPrecision,
+                            symbolPosition: detected.symbolPosition,
+                            country: loc.countryGuess,
+                            countryCode: loc.countryCode,
+                          });
+                          toast.success(`Detected location: ${loc.countryGuess} (${detected.name} - ${detected.code})`);
+                        }}
+                      >
+                        Detect My Location
+                      </Button>
+                    </Box>
+                  </Box>
+                </Grid>
+              </>
+            )}
 
             {/* 2. TAX & DISCOUNTS */}
             <Grid item xs={12}>

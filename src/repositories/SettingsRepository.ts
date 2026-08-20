@@ -9,7 +9,7 @@ import {
   SystemSettings,
   SystemSettingsSchema,
 } from "../domain/models/Settings";
-import { deriveCurrencyFromCountry } from "../domain/formatting/CurrencyFormatter";
+import { deriveCurrencyFromCountry, getDetectedLocationInfo } from "../domain/formatting/CurrencyFormatter";
 
 const LOCAL_STORAGE_ORG_KEY = "pos_org_settings_";
 const LOCAL_STORAGE_USER_KEY = "pos_user_settings_";
@@ -53,7 +53,8 @@ export class SettingsRepository extends FirestoreBaseRepository<
       } catch (_) {}
     }
 
-    // 3. Fallback default settings
+    // 3. Fallback default settings based on system location
+    const initialLoc = getDetectedLocationInfo();
     const fallback: OrganizationSettings = {
       id: "organization-settings",
       tenantId: tId,
@@ -63,16 +64,16 @@ export class SettingsRepository extends FirestoreBaseRepository<
       phone: "",
       address: "",
       city: "",
-      country: "United States",
-      countryCode: "US",
+      country: initialLoc.countryGuess || "United States",
+      countryCode: initialLoc.countryCode || "US",
       postalCode: "",
       website: "",
       taxRegistrationNumber: "",
       logoUrl: "",
       currencyMode: "MANUAL",
-      currencyCode: "USD",
-      currencySymbol: "$",
-      decimalPrecision: 2,
+      currencyCode: initialLoc.detectedCode || "USD",
+      currencySymbol: initialLoc.detectedSymbol || "$",
+      decimalPrecision: initialLoc.detectedCode === "JPY" || initialLoc.detectedCode === "IDR" || initialLoc.detectedCode === "VND" ? 0 : 2,
       symbolPosition: "BEFORE",
       taxEnabled: true,
       defaultTaxRate: 0.05,
@@ -83,7 +84,7 @@ export class SettingsRepository extends FirestoreBaseRepository<
       defaultPaymentMethod: "CASH",
       customerRequired: false,
       autoClearCart: true,
-      quickCashPresets: [20, 50, 100],
+      quickCashPresets: initialLoc.detectedCode === "PKR" ? [500, 1000, 5000] : [20, 50, 100],
       allowNegativeStockSales: false,
       lowStockThreshold: 5,
       receiptHeader: "Official Sales Receipt",
@@ -117,8 +118,8 @@ export class SettingsRepository extends FirestoreBaseRepository<
       updatedAt: new Date().toISOString(),
     };
 
-    // If currency mode is AUTO, re-derive from country
-    if (updatedData.currencyMode === "AUTO" && updatedData.country) {
+    // If currency mode is AUTO, re-derive from country / environment
+    if (updatedData.currencyMode === "AUTO") {
       const derived = deriveCurrencyFromCountry(updatedData.country);
       updatedData.currencyCode = derived.code;
       updatedData.currencySymbol = derived.symbol;
