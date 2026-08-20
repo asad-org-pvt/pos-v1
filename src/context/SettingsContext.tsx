@@ -70,7 +70,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const loadSettings = useCallback(async () => {
     setIsLoading(true);
     try {
-      const org = await settingsService.getOrganizationSettings(tenantId);
+      const effectiveTenantId =
+        tenantId ||
+        (typeof localStorage !== "undefined" ? localStorage.getItem("org") || "default" : "default");
+
+      const org = await settingsService.getOrganizationSettings(effectiveTenantId);
       setOrganizationSettings(org);
 
       const activeUserId =
@@ -78,10 +82,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         (typeof localStorage !== "undefined" ? localStorage.getItem("uid") || localStorage.getItem("email") : undefined);
 
       if (activeUserId) {
-        const u = await settingsService.getUserSettings(activeUserId, tenantId);
+        const u = await settingsService.getUserSettings(activeUserId, effectiveTenantId);
         setUserSettings(u);
       } else {
-        const u = await settingsService.getUserSettings("anonymous", tenantId);
+        const u = await settingsService.getUserSettings("anonymous", effectiveTenantId);
         setUserSettings(u);
       }
 
@@ -100,19 +104,25 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const updateOrganizationSettings = async (
     settings: Partial<OrganizationSettings>
   ): Promise<OrganizationSettings> => {
-    const updated = await settingsService.updateOrganizationSettings(settings, tenantId);
+    const effectiveTenantId =
+      tenantId ||
+      (typeof localStorage !== "undefined" ? localStorage.getItem("org") || "default" : "default");
+    const updated = await settingsService.updateOrganizationSettings(settings, effectiveTenantId);
     setOrganizationSettings(updated);
     return updated;
   };
 
   const updateUserSettings = async (settings: Partial<UserSettings>): Promise<UserSettings> => {
+    const effectiveTenantId =
+      tenantId ||
+      (typeof localStorage !== "undefined" ? localStorage.getItem("org") || "default" : "default");
     const activeUserId =
       user?.uid ||
       (typeof localStorage !== "undefined"
         ? localStorage.getItem("uid") || localStorage.getItem("email") || "anonymous"
         : "anonymous");
 
-    const updated = await settingsService.updateUserSettings(activeUserId, settings, tenantId);
+    const updated = await settingsService.updateUserSettings(activeUserId, settings, effectiveTenantId);
     setUserSettings(updated);
     return updated;
   };

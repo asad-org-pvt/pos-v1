@@ -1,70 +1,35 @@
 import { useFormik } from "formik";
 import React from "react";
-import { Colors } from "../../common/colors";
-import ButtonComponent from "../../common/components/button-component";
-import { ComponentProps, useStylesFromThemeFunction } from "./EmployeeForm";
+import {
+  Box,
+  Grid,
+  TextField,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
+  Paper,
+} from "@mui/material";
+import {
+  Person,
+  Home,
+  Work,
+  Save as SaveIcon,
+} from "@mui/icons-material";
+import { ComponentProps } from "./EmployeeForm";
 
 const EmployeeForm: React.FC<ComponentProps> = ({
   onSubmit,
-  onChange,
   employee,
-  options,
-  onImageChange,
 }) => {
-  const classes = useStylesFromThemeFunction();
-
-  // const getProductCategories = () => {
-
-  //   //call get product categories api here
-
-  //   return [
-  //     {
-  //       id: "qwertyuiop",
-  //       name: 'Category 1',
-  //     },
-  //     {
-  //       id: "asdfghjkl",
-  //       name: 'Category 2',
-  //     },
-  //     {
-  //       id: "zxcvbnm",
-  //       name: 'Category 3',
-  //     }
-  //   ]
-  // }
-  // const getSuppliers = () => {
-
-  //     //call get suppliers api here
-  //     return [
-  //       {
-  //         id: "qwertyuiop",
-  //         name: 'Supplier 1',
-  //       },
-  //       {
-  //         id: "asdfghjkl",
-  //         name: 'Supplier 2',
-  //       },
-  //       {
-  //         id: "zxcvbnm",
-  //         name: 'Supplier 3',
-  //       }
-  //     ]
-  // }
-
-  // const renderSuppliers = () => {
-  //   return getSuppliers().map(supplier => <option key={supplier.id} value={supplier.id}>{supplier.name}</option>)
-  // }
-  // const rendeProductCategories = () => {
-  //   return getProductCategories()
-  //   .map(category => <option key={category.id} value={category.id}>{category.name}</option>)
-  // }
-
   const initialValues = {
     id: employee?.id || "",
     name: employee?.name || "",
     email: employee?.email || "",
     fatherName: employee?.fatherName || "",
-    country: employee?.country || "",
+    country: employee?.country || "United States",
     state: employee?.state || "",
     city: employee?.city || "",
     address: employee?.address || "",
@@ -72,346 +37,350 @@ const EmployeeForm: React.FC<ComponentProps> = ({
     nationality: employee?.nationality || "",
     phoneNumber: employee?.phoneNumber || "",
     landLineNumber: employee?.landLineNumber || "",
-    gender: employee?.gender || "",
+    gender: employee?.gender || "male",
     religion: employee?.religion || "",
     dateOfBirth: employee?.dateOfBirth || "",
-    organisation: employee?.organisation || localStorage.getItem("org") || "",
-    //Job Information
-    department: employee?.department || "",
-    designation: employee?.designation || "",
-    appointmentDate: employee?.appointmentDate || "",
-    appointmentBranch: employee?.appointmentBranch || "",
-    joiningDate: employee?.joiningDate || "",
-    active: employee?.active || "",
+    organisation: employee?.organisation || localStorage.getItem("org") || "default",
+    department: employee?.department || "Cash Counter",
+    designation: employee?.designation || employee?.jobTitle || "Cashier",
+    role: employee?.role || (employee?.isAdmin ? "ADMIN" : "EMPLOYEE"),
+    appointmentDate: employee?.appointmentDate || new Date().toISOString().split("T")[0],
+    appointmentBranch: employee?.appointmentBranch || "Main Branch",
+    joiningDate: employee?.joiningDate || new Date().toISOString().split("T")[0],
+    active: employee?.active !== undefined ? (employee?.active ? "active" : "inactive") : "active",
   };
-  const validate = (values) => {};
-  // const onSubmit = (values) => {
-
-  // }
 
   const formik = useFormik({
     initialValues,
-    validate,
+    enableReinitialize: true,
+    validate: (values) => {
+      const errors: Record<string, string> = {};
+      if (!values.name?.trim()) {
+        errors.name = "Employee name is required";
+      }
+      if (!values.email?.trim()) {
+        errors.email = "Email address is required";
+      } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
+        errors.email = "Invalid email address";
+      }
+      if (!values.phoneNumber?.trim()) {
+        errors.phoneNumber = "Phone number is required";
+      }
+      return errors;
+    },
     onSubmit: (values, { resetForm }) => {
-      onSubmit(values, { resetForm });
+      const payload = {
+        ...values,
+        id: values.id || `emp_${Date.now()}`,
+        jobTitle: values.designation,
+        isActive: values.active === "active",
+        isAdmin: values.role === "ADMIN" || values.role === "SUPER_ADMIN",
+      };
+      onSubmit(payload, { resetForm });
     },
   });
 
   return (
-    <div>
-      <form onSubmit={formik.handleSubmit}>
-        <div className={classes.container}>
-          <div className="form-group">
-            <div className={classes.row}>
-              <div className={classes.column}>
-                <label htmlFor="id">
-                  Id<span className={classes.colorRed}>*</span>{" "}
-                  <span className={classes.labelHintWrapper}>Enter CNIC</span>
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="id"
-                  name="id"
-                  value={formik.values.id}
-                  required
-                  onChange={formik.handleChange}
-                />
-              </div>
-              <div className={classes.column}>
-                <label htmlFor="name">
-                  Name<span className={classes.colorRed}>*</span>
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="name"
-                  name="name"
-                  required
-                  value={formik.values.name}
-                  onChange={formik.handleChange}
-                />
-              </div>
-            </div>
-            <div className={classes.row}>
-              <div className={classes.column}>
-                <label htmlFor="fatherName">Father Name</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="fatherName"
-                  name="fatherName"
-                  value={formik.values.fatherName}
-                  onChange={formik.handleChange}
-                />
-              </div>
-              <div className={classes.column}>
-                <label htmlFor="email">
-                  Email<span className={classes.colorRed}>*</span>
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="email"
-                  name="email"
-                  required
-                  value={formik.values.email}
-                  onChange={formik.handleChange}
-                />
-              </div>
-            </div>
-            <hr />
-            <div className={classes.row}>
-              <div className={classes.column}>
-                <label htmlFor="country">Country</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="country"
-                  name="country"
-                  value={formik.values.country}
-                  onChange={formik.handleChange}
-                />
-              </div>
-              <div className={classes.column}>
-                <label htmlFor="state">State</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="state"
-                  name="state"
-                  value={formik.values.state}
-                  onChange={formik.handleChange}
-                />
-              </div>
-              <div className={classes.column}>
-                <label htmlFor="city">City</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="city"
-                  name="city"
-                  value={formik.values.city}
-                  onChange={formik.handleChange}
-                />
-              </div>
-            </div>
-            <div className={classes.row}>
-              <div className={classes.column}>
-                <label htmlFor="address">Address</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="address"
-                  name="address"
-                  value={formik.values.address}
-                  onChange={formik.handleChange}
-                />
-              </div>
-              <div className={classes.column}>
-                <label htmlFor="zipCode">Zip Code</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="zipCode"
-                  name="zipCode"
-                  value={formik.values.zipCode}
-                  onChange={formik.handleChange}
-                />
-              </div>
-              <div className={classes.column}>
-                <label htmlFor="nationality">Nationality</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="nationality"
-                  name="nationality"
-                  value={formik.values.nationality}
-                  onChange={formik.handleChange}
-                />
-              </div>
-            </div>
-            <hr />
-            <div className={classes.row}>
-              <div className={classes.column}>
-                <label htmlFor="gender">Gender</label>
-                <select
-                  className="form-control"
-                  id="gender"
-                  name="gender"
-                  value={formik.values.gender}
-                  onChange={formik.handleChange}
-                >
-                  <option value="male">male</option>
-                  <option value="female">female</option>
-                  <option value="other">other</option>
-                </select>
-              </div>
-              <div className={classes.column}>
-                <label htmlFor="religion">Religion</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="religion"
-                  name="religion"
-                  value={formik.values.religion}
-                  onChange={formik.handleChange}
-                />
-              </div>
-              <div className={classes.column}>
-                <label htmlFor="dateOfBirth">Date of Birth</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  id="dateOfBirth"
-                  name="dateOfBirth"
-                  value={formik.values.dateOfBirth}
-                  onChange={formik.handleChange}
-                />
-              </div>
-            </div>
-            <div className={classes.row}>
-              <div className={classes.column}>
-                <label htmlFor="phoneNumber">
-                  Phone Number<span className={classes.colorRed}>*</span>
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  required
-                  value={formik.values.phoneNumber}
-                  onChange={formik.handleChange}
-                />
-              </div>
-              <div className={classes.column}>
-                <label htmlFor="landLineNumber">Land-Line Number</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="landLineNumber"
-                  name="landLineNumber"
-                  value={formik.values.landLineNumber}
-                  onChange={formik.handleChange}
-                />
-              </div>
-            </div>
-          </div>
-          <hr />
-          <div className="form-group">
-            <h4>Job Information</h4>
-            <div className={classes.row}>
-              <div className={classes.column}>
-                <label htmlFor="organisation">
-                  Organisation<span className={classes.colorRed}>*</span>
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="organisation"
-                  name="organisation"
-                  value={formik.values.organisation}
-                  onChange={formik.handleChange}
-                />
-              </div>
-            </div>
-            <div className={classes.row}>
-              <div className={classes.column}>
-                <label htmlFor="department">Department</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="department"
-                  name="department"
-                  value={formik.values.department}
-                  onChange={formik.handleChange}
-                />
-              </div>
-              <div className={classes.column}>
-                <label htmlFor="designation">
-                  Designation<span className={classes.colorRed}>*</span>
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="designation"
-                  name="designation"
-                  required
-                  value={formik.values.designation}
-                  onChange={formik.handleChange}
-                />
-              </div>
-            </div>
-            <div className={classes.row}>
-              <div className={classes.column}>
-                <label htmlFor="appointmentDate">
-                  Appointment Date<span className={classes.colorRed}>*</span>
-                </label>
-                <input
-                  type="date"
-                  className="form-control"
-                  id="appointmentDate"
-                  name="appointmentDate"
-                  required
-                  value={formik.values.appointmentDate}
-                  onChange={formik.handleChange}
-                />
-              </div>
-              <div className={classes.column}>
-                <label htmlFor="joiningDate">Joining Date</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  id="joiningDate"
-                  name="joiningDate"
-                  value={formik.values.joiningDate}
-                  onChange={formik.handleChange}
-                />
-              </div>
-            </div>
-            <div className={classes.row}>
-              <div className={classes.column}>
-                <label htmlFor="appointmentBranch">Appointment Branch</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="appointmentBranch"
-                  name="appointmentBranch"
-                  value={formik.values.appointmentBranch}
-                  onChange={formik.handleChange}
-                />
-              </div>
-              <div className={classes.column}>
-                <label htmlFor="active">Active</label>
-                <select
-                  className="form-control"
-                  id="active"
-                  name="active"
-                  value={formik.values.active}
-                  onChange={formik.handleChange}
-                >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <hr />
-        </div>
-        <div className={classes.centeredRow}>
-          <ButtonComponent
-            type="submit"
-            disabled={formik.isSubmitting}
-            style={{ width: "100%", height: "50px" }}
-          >
-            <h4>
-              <b>Submit</b>
-            </h4>
-          </ButtonComponent>
-        </div>
-      </form>
-    </div>
+    <Box component="form" onSubmit={formik.handleSubmit} sx={{ p: { xs: 1.5, sm: 2 } }}>
+      {/* 1. PERSONAL INFORMATION */}
+      <Paper elevation={0} sx={{ p: 2, mb: 3, borderRadius: 2, border: "1px solid", borderColor: "divider", bgcolor: "background.paper" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+          <Person color="primary" fontSize="small" />
+          <Typography variant="subtitle1" fontWeight="bold" color="text.primary">
+            Personal & Identification Details
+          </Typography>
+        </Box>
+
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              size="small"
+              id="name"
+              name="name"
+              label="Full Name *"
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              error={formik.touched.name && Boolean(formik.errors.name)}
+              helperText={formik.touched.name && formik.errors.name}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              size="small"
+              id="id"
+              name="id"
+              label="National ID / CNIC / Staff ID"
+              placeholder="e.g. 42101-1234567-1 or EMP-101"
+              value={formik.values.id}
+              onChange={formik.handleChange}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              size="small"
+              id="email"
+              name="email"
+              type="email"
+              label="Email Address *"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              size="small"
+              id="phoneNumber"
+              name="phoneNumber"
+              label="Primary Phone Number *"
+              value={formik.values.phoneNumber}
+              onChange={formik.handleChange}
+              error={formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber)}
+              helperText={formik.touched.phoneNumber && formik.errors.phoneNumber}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              size="small"
+              id="fatherName"
+              name="fatherName"
+              label="Father / Guardian Name"
+              value={formik.values.fatherName}
+              onChange={formik.handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <FormControl fullWidth size="small">
+              <InputLabel id="gender-label">Gender</InputLabel>
+              <Select
+                labelId="gender-label"
+                label="Gender"
+                id="gender"
+                name="gender"
+                value={formik.values.gender}
+                onChange={formik.handleChange}
+              >
+                <MenuItem value="male">Male</MenuItem>
+                <MenuItem value="female">Female</MenuItem>
+                <MenuItem value="other">Other</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              size="small"
+              type="date"
+              id="dateOfBirth"
+              name="dateOfBirth"
+              label="Date of Birth"
+              InputLabelProps={{ shrink: true }}
+              value={formik.values.dateOfBirth}
+              onChange={formik.handleChange}
+            />
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/* 2. RESIDENTIAL ADDRESS */}
+      <Paper elevation={0} sx={{ p: 2, mb: 3, borderRadius: 2, border: "1px solid", borderColor: "divider", bgcolor: "background.paper" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+          <Home color="primary" fontSize="small" />
+          <Typography variant="subtitle1" fontWeight="bold" color="text.primary">
+            Address & Location
+          </Typography>
+        </Box>
+
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              size="small"
+              id="country"
+              name="country"
+              label="Country"
+              value={formik.values.country}
+              onChange={formik.handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              size="small"
+              id="state"
+              name="state"
+              label="State / Province"
+              value={formik.values.state}
+              onChange={formik.handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              size="small"
+              id="city"
+              name="city"
+              label="City"
+              value={formik.values.city}
+              onChange={formik.handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              size="small"
+              id="zipCode"
+              name="zipCode"
+              label="Zip / Postal Code"
+              value={formik.values.zipCode}
+              onChange={formik.handleChange}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              size="small"
+              id="address"
+              name="address"
+              label="Street Address"
+              value={formik.values.address}
+              onChange={formik.handleChange}
+            />
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/* 3. EMPLOYMENT & ROLE ACCESS */}
+      <Paper elevation={0} sx={{ p: 2, mb: 3, borderRadius: 2, border: "1px solid", borderColor: "divider", bgcolor: "background.paper" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+          <Work color="primary" fontSize="small" />
+          <Typography variant="subtitle1" fontWeight="bold" color="text.primary">
+            Job Details & System Access
+          </Typography>
+        </Box>
+
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth size="small">
+              <InputLabel id="dept-label">Department</InputLabel>
+              <Select
+                labelId="dept-label"
+                label="Department"
+                id="department"
+                name="department"
+                value={formik.values.department}
+                onChange={formik.handleChange}
+              >
+                <MenuItem value="Cash Counter">Cash Counter / Front Desk</MenuItem>
+                <MenuItem value="Sales">Sales & Customer Service</MenuItem>
+                <MenuItem value="Inventory">Inventory & Warehouse</MenuItem>
+                <MenuItem value="Purchasing">Purchasing & Procurement</MenuItem>
+                <MenuItem value="Management">Store Management</MenuItem>
+                <MenuItem value="Accounts">Finance & Accounts</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              size="small"
+              id="designation"
+              name="designation"
+              label="Job Title / Designation"
+              value={formik.values.designation}
+              onChange={formik.handleChange}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth size="small">
+              <InputLabel id="role-label">System Role & Permissions</InputLabel>
+              <Select
+                labelId="role-label"
+                label="System Role & Permissions"
+                id="role"
+                name="role"
+                value={formik.values.role}
+                onChange={formik.handleChange}
+              >
+                <MenuItem value="EMPLOYEE">Cashier / Staff Member (POS sales & basic features)</MenuItem>
+                <MenuItem value="ORGANISATION">Store Manager (Discounts, returns, shifts, reports)</MenuItem>
+                <MenuItem value="ADMIN">Administrator (Full organization control & settings)</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth size="small">
+              <InputLabel id="status-label">Employment Status</InputLabel>
+              <Select
+                labelId="status-label"
+                label="Employment Status"
+                id="active"
+                name="active"
+                value={formik.values.active}
+                onChange={formik.handleChange}
+              >
+                <MenuItem value="active">Active (Permitted to log in)</MenuItem>
+                <MenuItem value="inactive">Inactive / On Leave</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              size="small"
+              type="date"
+              id="appointmentDate"
+              name="appointmentDate"
+              label="Appointment Date"
+              InputLabelProps={{ shrink: true }}
+              value={formik.values.appointmentDate}
+              onChange={formik.handleChange}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              size="small"
+              type="date"
+              id="joiningDate"
+              name="joiningDate"
+              label="Joining Date"
+              InputLabelProps={{ shrink: true }}
+              value={formik.values.joiningDate}
+              onChange={formik.handleChange}
+            />
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/* SUBMIT BUTTON */}
+      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          size="large"
+          disabled={formik.isSubmitting}
+          startIcon={<SaveIcon />}
+          sx={{ minWidth: 160, borderRadius: 2, fontWeight: "bold" }}
+        >
+          {formik.isSubmitting ? "Saving..." : "Save Employee"}
+        </Button>
+      </Box>
+    </Box>
   );
 };
 

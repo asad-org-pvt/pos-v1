@@ -1,57 +1,70 @@
-import React, { useMemo, useState } from "react";
-import EditIcon from "../../../assets/component/EditIcon";
-import RemoveIcon from "../../../assets/component/RemoveIcon";
-import { Colors } from "../../common/colors";
-import Table from "../../common/components/table";
-import { useStylesFromThemeFunction } from "./CustomerList";
+import React, { useMemo, useState, useEffect } from "react";
+import {
+  Box,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Button,
+  Chip,
+  Typography,
+  Avatar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Tabs,
+  Tab,
+  Tooltip,
+} from "@mui/material";
+import {
+  Search,
+  Refresh,
+  Edit as EditIcon,
+  DeleteOutline as DeleteIcon,
+  Visibility,
+  ShoppingBag,
+  AssignmentReturn,
+} from "@mui/icons-material";
 import toast from "react-hot-toast";
-import { Modal } from "react-bootstrap";
 import { customerService } from "../../../services/app/CustomerService";
 import CustomerForm from "../customer-form";
 import { useTenant } from "../../../context/AuthTenantContext";
 import { Customer } from "../../../domain/models/Customer";
 import { Order } from "../../../domain/models/Order";
 import { Return } from "../../../domain/models/Return";
-import {
-  Box,
-  TextField,
-  Button,
-  Chip,
-  Typography,
-  Tabs,
-  Tab,
-  IconButton,
-} from "@mui/material";
-import { Visibility, Refresh } from "@mui/icons-material";
 import { useSettings } from "../../../context/SettingsContext";
 
 interface ComponentProps {
   customers?: any[];
+  onAddCustomerClick?: () => void;
 }
 
 const CustomerList: React.FC<ComponentProps> = (props) => {
-  const classes = useStylesFromThemeFunction();
   const { tenantId } = useTenant();
-  const { formatCurrency, formatDate, organizationSettings } = useSettings();
-
-  const [tableHeadings] = useState([
-    "ID",
-    "Name",
-    "Status",
-    "Email",
-    "Phone Number",
-    "Address",
-    "Actions",
-  ]);
+  const { formatCurrency, formatDate } = useSettings();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [customers, setCustomers] = useState<Customer[]>((props?.customers as Customer[]) || []);
-  const [showCustomerUpdateModal, setShowCustomerUpdateModal] = useState(false);
-  const [showCustomerDetailModal, setShowCustomerDetailModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  // Customer History Modal State
+  // Edit and Detail Modal states
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDetailDialog, setShowDetailDialog] = useState(false);
+  const [deactivateCandidate, setDeactivateCandidate] = useState<Customer | null>(null);
+
+  // History state
   const [customerOrders, setCustomerOrders] = useState<Order[]>([]);
   const [customerReturns, setCustomerReturns] = useState<Return[]>([]);
   const [historyTab, setHistoryTab] = useState<number>(0);
@@ -62,7 +75,7 @@ const CustomerList: React.FC<ComponentProps> = (props) => {
     customerService
       .getCustomers(tenantId)
       .then((res) => {
-        setCustomers(res);
+        setCustomers(res || []);
       })
       .catch(() => {
         toast.error("Failed to load customers");
@@ -72,38 +85,38 @@ const CustomerList: React.FC<ComponentProps> = (props) => {
       });
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     loadCustomers();
   }, [tenantId]);
 
-  const handleRemoveCustomer = async (customer: Customer) => {
-    if (window.confirm(`Are you sure you want to deactivate customer "${customer.name}"?`)) {
-      try {
-        await customerService.deactivateCustomer(customer.id, tenantId);
-        toast.success(`Customer "${customer.name}" deactivated`);
-        loadCustomers();
-      } catch (e: any) {
-        toast.error(e.message || "Error while deactivating customer");
-      }
+  const handleConfirmDeactivate = async () => {
+    if (!deactivateCandidate) return;
+    try {
+      await customerService.deactivateCustomer(deactivateCandidate.id, tenantId);
+      toast.success(`Customer "${deactivateCandidate.name}" status updated`);
+      setDeactivateCandidate(null);
+      loadCustomers();
+    } catch (e: any) {
+      toast.error(e.message || "Error while deactivating customer");
     }
   };
 
   const handleEditCustomer = (customer: Customer) => {
     setSelectedCustomer(customer);
-    setShowCustomerUpdateModal(true);
+    setShowEditDialog(true);
   };
 
   const handleViewCustomerDetail = async (customer: Customer) => {
     setSelectedCustomer(customer);
-    setShowCustomerDetailModal(true);
+    setShowDetailDialog(true);
     setIsLoadingHistory(true);
     try {
       const [orders, returns] = await Promise.all([
         customerService.getCustomerPurchaseHistory(customer.id, tenantId),
         customerService.getCustomerReturnHistory(customer.id, tenantId),
       ]);
-      setCustomerOrders(orders);
-      setCustomerReturns(returns);
+      setCustomerOrders(orders || []);
+      setCustomerReturns(returns || []);
     } catch (err) {
       console.warn("Could not load customer history", err);
     } finally {
@@ -115,8 +128,8 @@ const CustomerList: React.FC<ComponentProps> = (props) => {
     customerService
       .updateCustomer(updatedCustomer.id, updatedCustomer, tenantId)
       .then(() => {
-        toast.success(`${updatedCustomer.name} updated successfully`);
-        setShowCustomerUpdateModal(false);
+        toast.success(`Customer "${updatedCustomer.name}" updated successfully`);
+        setShowEditDialog(false);
         setSelectedCustomer(null);
         loadCustomers();
       })
@@ -125,183 +138,433 @@ const CustomerList: React.FC<ComponentProps> = (props) => {
       });
   };
 
+  // Filtered customers
   const filteredCustomers = useMemo(() => {
-    if (!searchQuery || searchQuery.trim() === "") {
-      return customers;
-    }
-    const q = searchQuery.toLowerCase().trim();
-    return customers.filter(
-      (c) =>
+    return customers.filter((c) => {
+      const q = searchQuery.toLowerCase().trim();
+      return (
+        !searchQuery.trim() ||
         c.name?.toLowerCase().includes(q) ||
         c.email?.toLowerCase().includes(q) ||
         c.phoneNumber?.toLowerCase().includes(q) ||
-        c.id?.toLowerCase().includes(q)
-    );
-  }, [customers, searchQuery]);
-
-  const renderTableData = useMemo(() => {
-    return filteredCustomers?.map((customer) => {
-      const isActive = customer.isActive !== false;
-      return (
-        <tr key={customer.id} onDoubleClick={() => handleViewCustomerDetail(customer)}>
-          <td><strong>{customer.id}</strong></td>
-          <td>{customer.name}</td>
-          <td>
-            <Chip
-              label={isActive ? "Active" : "Inactive"}
-              size="small"
-              color={isActive ? "success" : "default"}
-            />
-          </td>
-          <td>{customer.email || "-"}</td>
-          <td>{customer.phoneNumber || "-"}</td>
-          <td>{customer.address || "-"}</td>
-          <td>
-            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-              <IconButton
-                size="small"
-                color="primary"
-                title="View History"
-                onClick={() => handleViewCustomerDetail(customer)}
-              >
-                <Visibility fontSize="small" />
-              </IconButton>
-              <IconButton
-                size="small"
-                title="Edit Customer"
-                onClick={() => handleEditCustomer(customer)}
-              >
-                <EditIcon fill={Colors.gray} />
-              </IconButton>
-              <IconButton
-                size="small"
-                title="Deactivate Customer"
-                onClick={() => handleRemoveCustomer(customer)}
-              >
-                <RemoveIcon fill={Colors.red} />
-              </IconButton>
-            </Box>
-          </td>
-        </tr>
+        c.id?.toLowerCase().includes(q) ||
+        c.city?.toLowerCase().includes(q)
       );
     });
-  }, [filteredCustomers, classes]);
+  }, [customers, searchQuery]);
+
+  const displayedCustomers = useMemo(() => {
+    return filteredCustomers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  }, [filteredCustomers, page, rowsPerPage]);
 
   return (
-    <>
-      <Box sx={{ p: 2, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2 }}>
+    <Box sx={{ width: "100%" }}>
+      {/* SEARCH BAR */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: 2,
+          mb: 2,
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 2,
+          alignItems: "center",
+          justifyContent: "space-between",
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: 2,
+          bgcolor: "background.paper",
+        }}
+      >
         <TextField
           size="small"
-          placeholder="Search by Name, Phone, Email..."
+          placeholder="Search customer by name, mobile, email, CNIC/ID..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{ width: 320 }}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setPage(0);
+          }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search fontSize="small" color="action" />
+              </InputAdornment>
+            ),
+          }}
+          sx={{ minWidth: { xs: "100%", sm: 340 }, flex: 1 }}
         />
-        <Button variant="outlined" startIcon={<Refresh />} onClick={loadCustomers} disabled={isLoading}>
-          Refresh
-        </Button>
-      </Box>
 
-      <Table
-        tableHeadings={tableHeadings}
-        renderBody={renderTableData}
-        loading={isLoading}
-      />
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Tooltip title="Refresh customer list">
+            <IconButton onClick={loadCustomers} disabled={isLoading} color="primary">
+              <Refresh />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      </Paper>
 
-      {/* Customer Update Modal */}
-      <Modal
-        className={classes.modalWrapper}
-        show={showCustomerUpdateModal}
-        onHide={() => setShowCustomerUpdateModal(false)}
+      {/* CUSTOMERS TABLE */}
+      <TableContainer
+        component={Paper}
+        elevation={0}
+        sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2, bgcolor: "background.paper" }}
       >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            Update <b>{selectedCustomer?.name}</b>
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className={classes.modalBodyWrapper}>
+        <Table size="medium">
+          <TableHead sx={{ bgcolor: "action.hover" }}>
+            <TableRow>
+              <TableCell sx={{ fontWeight: "bold" }}>Customer</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Contact Info</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Location</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Orders / Spent</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+              <TableCell sx={{ fontWeight: "bold", textAlign: "right" }}>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    Loading customers...
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ) : displayedCustomers.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    {searchQuery ? "No customers matching search criteria." : "No customers registered yet."}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ) : (
+              displayedCustomers.map((cust) => {
+                const initials = cust.name
+                  ? cust.name
+                      .split(" ")
+                      .map((n: string) => n[0])
+                      .slice(0, 2)
+                      .join("")
+                      .toUpperCase()
+                  : "C";
+
+                const isActive = cust.isActive !== false;
+
+                return (
+                  <TableRow
+                    key={cust.id}
+                    hover
+                    sx={{ "&:hover": { bgcolor: "action.hover" } }}
+                  >
+                    <TableCell>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                        <Avatar
+                          sx={{
+                            bgcolor: "info.main",
+                            color: "info.contrastText",
+                            width: 38,
+                            height: 38,
+                            fontSize: "0.875rem",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {initials}
+                        </Avatar>
+                        <Box>
+                          <Typography variant="subtitle2" fontWeight="bold" color="text.primary">
+                            {cust.name}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            ID: {cust.id}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </TableCell>
+
+                    <TableCell>
+                      <Typography variant="body2" fontWeight="500" color="text.primary">
+                        {cust.phoneNumber || "-"}
+                      </Typography>
+                      {cust.email && (
+                        <Typography variant="caption" color="text.secondary" display="block">
+                          {cust.email}
+                        </Typography>
+                      )}
+                    </TableCell>
+
+                    <TableCell>
+                      <Typography variant="body2" color="text.primary">
+                        {cust.city ? `${cust.city}, ` : ""}{cust.country || "-"}
+                      </Typography>
+                      {cust.address && (
+                        <Typography variant="caption" color="text.secondary" display="block" noWrap sx={{ maxWidth: 160 }}>
+                          {cust.address}
+                        </Typography>
+                      )}
+                    </TableCell>
+
+                    <TableCell>
+                      <Typography variant="body2" fontWeight="bold" color="text.primary">
+                        {formatCurrency(cust.totalAmountSpent || 0)}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {cust.totalOrdersPlaced || 0} purchase(s)
+                      </Typography>
+                    </TableCell>
+
+                    <TableCell>
+                      <Chip
+                        size="small"
+                        label={isActive ? "Active" : "Inactive"}
+                        color={isActive ? "success" : "default"}
+                        sx={{ fontWeight: "600" }}
+                      />
+                    </TableCell>
+
+                    <TableCell align="right">
+                      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 0.5 }}>
+                        <Tooltip title="View Order History & Profile">
+                          <IconButton
+                            size="small"
+                            color="info"
+                            onClick={() => handleViewCustomerDetail(cust)}
+                          >
+                            <Visibility fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+
+                        <Tooltip title="Edit Customer">
+                          <IconButton
+                            size="small"
+                            color="primary"
+                            onClick={() => handleEditCustomer(cust)}
+                          >
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+
+                        <Tooltip title="Deactivate Customer">
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() => setDeactivateCandidate(cust)}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
+          </TableBody>
+        </Table>
+
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={filteredCustomers.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={(_, newPage) => setPage(newPage)}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
+        />
+      </TableContainer>
+
+      {/* EDIT MODAL DIALOG */}
+      <Dialog
+        open={showEditDialog}
+        onClose={() => setShowEditDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: "bold", borderBottom: "1px solid", borderColor: "divider" }}>
+          Edit Customer: {selectedCustomer?.name}
+        </DialogTitle>
+        <DialogContent sx={{ mt: 2 }}>
+          {selectedCustomer && (
             <CustomerForm customer={selectedCustomer} onSubmit={handleUpdate} />
-          </div>
-        </Modal.Body>
-      </Modal>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ p: 2, borderTop: "1px solid", borderColor: "divider" }}>
+          <Button onClick={() => setShowEditDialog(false)} color="inherit">
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
 
-      {/* Customer Details & History Modal */}
-      <Modal
-        show={showCustomerDetailModal}
-        onHide={() => setShowCustomerDetailModal(false)}
-        size="lg"
-        centered
+      {/* CUSTOMER DETAIL & HISTORY DIALOG */}
+      <Dialog
+        open={showDetailDialog}
+        onClose={() => setShowDetailDialog(false)}
+        maxWidth="md"
+        fullWidth
       >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            Customer Profile: <b>{selectedCustomer?.name}</b>
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+        <DialogTitle sx={{ fontWeight: "bold", borderBottom: "1px solid", borderColor: "divider" }}>
+          Customer Account: {selectedCustomer?.name}
+        </DialogTitle>
+        <DialogContent sx={{ mt: 2 }}>
           {selectedCustomer && (
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <Box sx={{ display: "flex", justifyContent: "space-between", p: 2, bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 1 }}>
+              {/* Snapshot Info Card */}
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2,
+                  bgcolor: "action.hover",
+                  border: "1px solid",
+                  borderColor: "divider",
+                  borderRadius: 2,
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                  gap: 1.5,
+                }}
+              >
                 <Box>
-                  <Typography variant="body2"><strong>Email:</strong> {selectedCustomer.email || "N/A"}</Typography>
-                  <Typography variant="body2"><strong>Phone:</strong> {selectedCustomer.phoneNumber || "N/A"}</Typography>
+                  <Typography variant="caption" color="text.secondary">Phone Number</Typography>
+                  <Typography variant="body2" fontWeight="bold">{selectedCustomer.phoneNumber || "N/A"}</Typography>
                 </Box>
                 <Box>
-                  <Typography variant="body2"><strong>Address:</strong> {selectedCustomer.address || "N/A"}</Typography>
-                  <Typography variant="body2">
-                    <strong>Status:</strong> {selectedCustomer.isActive !== false ? "Active" : "Inactive"}
-                  </Typography>
+                  <Typography variant="caption" color="text.secondary">Email Address</Typography>
+                  <Typography variant="body2" fontWeight="bold">{selectedCustomer.email || "N/A"}</Typography>
                 </Box>
-              </Box>
+                <Box>
+                  <Typography variant="caption" color="text.secondary">Billing Address</Typography>
+                  <Typography variant="body2">{selectedCustomer.address || "N/A"}</Typography>
+                </Box>
+                <Box>
+                  <Typography variant="caption" color="text.secondary">Account Status</Typography>
+                  <Box sx={{ mt: 0.5 }}>
+                    <Chip
+                      size="small"
+                      label={selectedCustomer.isActive !== false ? "Active Member" : "Inactive"}
+                      color={selectedCustomer.isActive !== false ? "success" : "default"}
+                    />
+                  </Box>
+                </Box>
+              </Paper>
 
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <Tabs value={historyTab} onChange={(_, val) => setHistoryTab(val)}>
-                  <Tab label={`Purchase History (${customerOrders.length})`} />
-                  <Tab label={`Return History (${customerReturns.length})`} />
+                  <Tab icon={<ShoppingBag fontSize="small" />} iconPosition="start" label={`Purchase Orders (${customerOrders.length})`} />
+                  <Tab icon={<AssignmentReturn fontSize="small" />} iconPosition="start" label={`Return Records (${customerReturns.length})`} />
                 </Tabs>
               </Box>
 
               {historyTab === 0 && (
-                <Table
-                  tableHeadings={["Invoice #", "Date", "Items", `Total (${organizationSettings.currencySymbol.trim()})`, "Status"]}
-                  renderBody={customerOrders.map((ord) => (
-                    <tr key={ord.id}>
-                      <td><strong>{ord.invoiceNumber || ord.id}</strong></td>
-                      <td>{ord.createdAt || ord.dateTime ? formatDate(ord.createdAt || ord.dateTime) : "-"}</td>
-                      <td>{ord.products?.length || 0}</td>
-                      <td>{formatCurrency(ord.amountDue || ord.total || 0)}</td>
-                      <td><Chip label={ord.status} size="small" color={ord.status === "COMPLETED" ? "success" : "default"} /></td>
-                    </tr>
-                  ))}
-                  loading={isLoadingHistory}
-                />
+                <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid", borderColor: "divider" }}>
+                  <Table size="small">
+                    <TableHead sx={{ bgcolor: "action.hover" }}>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: "bold" }}>Invoice #</TableCell>
+                        <TableCell sx={{ fontWeight: "bold" }}>Date</TableCell>
+                        <TableCell sx={{ fontWeight: "bold" }}>Items</TableCell>
+                        <TableCell sx={{ fontWeight: "bold" }}>Total Amount</TableCell>
+                        <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {isLoadingHistory ? (
+                        <TableRow>
+                          <TableCell colSpan={5} align="center" sx={{ py: 3 }}>Loading history...</TableCell>
+                        </TableRow>
+                      ) : customerOrders.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={5} align="center" sx={{ py: 3 }}>No purchase history recorded for this customer.</TableCell>
+                        </TableRow>
+                      ) : (
+                        customerOrders.map((ord) => (
+                          <TableRow key={ord.id} hover>
+                            <TableCell sx={{ fontWeight: "bold" }}>{ord.invoiceNumber || ord.id}</TableCell>
+                            <TableCell>{ord.createdAt || ord.dateTime ? formatDate(ord.createdAt || ord.dateTime) : "-"}</TableCell>
+                            <TableCell>{ord.products?.length || 0} item(s)</TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>{formatCurrency(ord.amountDue || ord.total || 0)}</TableCell>
+                            <TableCell>
+                              <Chip
+                                label={ord.status || "COMPLETED"}
+                                size="small"
+                                color={ord.status === "COMPLETED" ? "success" : "default"}
+                              />
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
               )}
 
               {historyTab === 1 && (
-                <Table
-                  tableHeadings={["Return #", "Orig Invoice", "Date", `Refund (${organizationSettings.currencySymbol.trim()})`, "Reason"]}
-                  renderBody={customerReturns.map((ret) => (
-                    <tr key={ret.id}>
-                      <td><strong>{ret.returnInvoiceNumber || ret.id}</strong></td>
-                      <td>{ret.originalInvoiceNumber}</td>
-                      <td>{ret.createdAt ? formatDate(ret.createdAt) : "-"}</td>
-                      <td style={{ color: "var(--error, #dc2626)", fontWeight: "bold" }}>{formatCurrency(ret.refundTotal)}</td>
-                      <td>{ret.reason}</td>
-                    </tr>
-                  ))}
-                  loading={isLoadingHistory}
-                />
+                <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid", borderColor: "divider" }}>
+                  <Table size="small">
+                    <TableHead sx={{ bgcolor: "action.hover" }}>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: "bold" }}>Return Note #</TableCell>
+                        <TableCell sx={{ fontWeight: "bold" }}>Original Invoice</TableCell>
+                        <TableCell sx={{ fontWeight: "bold" }}>Date</TableCell>
+                        <TableCell sx={{ fontWeight: "bold" }}>Refund Amount</TableCell>
+                        <TableCell sx={{ fontWeight: "bold" }}>Reason</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {isLoadingHistory ? (
+                        <TableRow>
+                          <TableCell colSpan={5} align="center" sx={{ py: 3 }}>Loading returns...</TableCell>
+                        </TableRow>
+                      ) : customerReturns.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={5} align="center" sx={{ py: 3 }}>No return records found for this customer.</TableCell>
+                        </TableRow>
+                      ) : (
+                        customerReturns.map((ret) => (
+                          <TableRow key={ret.id} hover>
+                            <TableCell sx={{ fontWeight: "bold" }}>{ret.returnInvoiceNumber || ret.id}</TableCell>
+                            <TableCell>{ret.originalInvoiceNumber}</TableCell>
+                            <TableCell>{ret.createdAt ? formatDate(ret.createdAt) : "-"}</TableCell>
+                            <TableCell sx={{ color: "error.main", fontWeight: "bold" }}>{formatCurrency(ret.refundTotal)}</TableCell>
+                            <TableCell>{ret.reason || "General return"}</TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
               )}
             </Box>
           )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="outlined" onClick={() => setShowCustomerDetailModal(false)}>
+        </DialogContent>
+        <DialogActions sx={{ p: 2, borderTop: "1px solid", borderColor: "divider" }}>
+          <Button onClick={() => setShowDetailDialog(false)} color="inherit">
             Close
           </Button>
-        </Modal.Footer>
-      </Modal>
-    </>
+        </DialogActions>
+      </Dialog>
+
+      {/* DEACTIVATE CONFIRMATION MODAL */}
+      <Dialog
+        open={Boolean(deactivateCandidate)}
+        onClose={() => setDeactivateCandidate(null)}
+      >
+        <DialogTitle sx={{ fontWeight: "bold" }}>Confirm Status Change</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to deactivate customer <strong>{deactivateCandidate?.name}</strong>?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button onClick={() => setDeactivateCandidate(null)} color="inherit">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDeactivate} color="error" variant="contained">
+            Deactivate
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
 

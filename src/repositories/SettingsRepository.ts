@@ -133,8 +133,20 @@ export class SettingsRepository extends FirestoreBaseRepository<
     // Persist to Firestore asynchronously / resiliently if in online browser environment
     if (typeof window !== "undefined" && typeof navigator !== "undefined" && navigator.onLine) {
       try {
+        // 1. Tenant scoped settings
         const docRef = doc(this.getDb(), this.getCollectionName(tId), "organization");
         setDoc(docRef, validated, { merge: true }).catch(() => {});
+
+        // 2. Global settings document
+        const globalDocRef = doc(this.getDb(), "settings", "organization");
+        setDoc(globalDocRef, validated, { merge: true }).catch(() => {});
+
+        // 3. User profile backup
+        const userId = typeof localStorage !== "undefined" ? localStorage.getItem("uid") : undefined;
+        if (userId) {
+          const userDocRef = doc(this.getDb(), "users", userId);
+          setDoc(userDocRef, { organizationSettings: validated, updatedAt: new Date().toISOString() }, { merge: true }).catch(() => {});
+        }
       } catch (_) {
         // Local storage cache serves as reliable offline cache
       }
@@ -257,6 +269,22 @@ export class SettingsRepository extends FirestoreBaseRepository<
     if (typeof localStorage !== "undefined") {
       try {
         localStorage.setItem(LOCAL_STORAGE_SYSTEM_KEY, JSON.stringify(updated));
+      } catch (_) {}
+    }
+
+    // Persist to Firestore asynchronously
+    if (typeof window !== "undefined" && typeof navigator !== "undefined" && navigator.onLine) {
+      try {
+        const userId = typeof localStorage !== "undefined" ? localStorage.getItem("uid") : undefined;
+        const tenantId = typeof localStorage !== "undefined" ? localStorage.getItem("org") || "default" : "default";
+
+        const docRef = doc(this.getDb(), this.getCollectionName(tenantId), "system_preferences");
+        setDoc(docRef, updated, { merge: true }).catch(() => {});
+
+        if (userId) {
+          const userDocRef = doc(this.getDb(), "users", userId);
+          setDoc(userDocRef, { systemSettings: updated, updatedAt: new Date().toISOString() }, { merge: true }).catch(() => {});
+        }
       } catch (_) {}
     }
 

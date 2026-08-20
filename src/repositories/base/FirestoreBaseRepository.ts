@@ -60,6 +60,17 @@ export abstract class FirestoreBaseRepository<T extends { id: string }, TCreate 
     return `${activeTenant}-${this.collectionPrefix}`;
   }
 
+  /**
+   * Resolves any given collection name scoped to the active or specified tenant.
+   */
+  public getScopedCollection(collectionName: string, tenantId?: string): string {
+    const activeTenant = tenantId || getRuntimeTenantId();
+    if (!activeTenant || activeTenant === "default") {
+      return collectionName;
+    }
+    return `${activeTenant}-${collectionName}`;
+  }
+
   protected mapDoc(docSnapshot: any): T {
     const data = docSnapshot.data();
     return {

@@ -33,4 +33,13 @@ describe("FirestoreBaseRepository - Tenant Resolution", () => {
     setRuntimeTenantId("branch_north");
     expect(repo.getCollectionName("branch_south")).toBe("branch_south-test_items");
   });
+
+  it("resolves scoped arbitrary collection names accurately", () => {
+    expect(repo.getScopedCollection("payments")).toBe("payments");
+    expect(repo.getScopedCollection("payments", "default")).toBe("payments");
+
+    setRuntimeTenantId("branch_north");
+    expect(repo.getScopedCollection("payments")).toBe("branch_north-payments");
+    expect(repo.getScopedCollection("payments", "branch_south")).toBe("branch_south-payments");
+  });
 });
