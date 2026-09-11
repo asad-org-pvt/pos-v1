@@ -223,7 +223,7 @@ const OrderList: React.FC<ComponentProps> = (props) => {
             />
           </td>
           <td>
-            <Box sx={{ display: "flex", gap: 1 }}>
+            <Box sx={{ display: "flex", gap: 0.5, flexWrap: "nowrap" }}>
               <Button
                 size="small"
                 variant="text"
@@ -265,16 +265,16 @@ const OrderList: React.FC<ComponentProps> = (props) => {
   }, [filteredOrders, formatCurrency, formatDateTime, organizationSettings.returnWindowDays]);
 
   return (
-    <>
-      <Box sx={{ p: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <Box sx={{ width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box", overflow: "hidden", p: { xs: 1, sm: 2 } }}>
+      <Box sx={{ display: "flex", gap: 1.5, mb: 2, alignItems: "center", flexWrap: "wrap", width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
         <TextField
           size="small"
           placeholder="Search by Invoice #, Customer, Cashier..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{ width: "350px" }}
+          sx={{ width: { xs: "100%", sm: "350px" }, flex: { xs: 1, sm: "none" } }}
         />
-        <Button variant="outlined" onClick={loadOrders} disabled={isLoading}>
+        <Button variant="outlined" onClick={loadOrders} disabled={isLoading} sx={{ width: { xs: "100%", sm: "auto" } }}>
           Refresh
         </Button>
       </Box>
@@ -300,7 +300,7 @@ const OrderList: React.FC<ComponentProps> = (props) => {
         <Modal.Body>
           {selectedOrder && (
             <div className={classes.modalBodyWrapper}>
-              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2, width: "100%", flexDirection: { xs: "column", sm: "row" }, gap: 1 }}>
                 <Box>
                   <Typography variant="body2">
                     <strong>Customer:</strong> {selectedOrder.customerName || "Walk-in"}
@@ -309,7 +309,7 @@ const OrderList: React.FC<ComponentProps> = (props) => {
                     <strong>Cashier:</strong> {selectedOrder.employeeName || "Cashier"}
                   </Typography>
                 </Box>
-                <Box sx={{ textAlign: "right" }}>
+                <Box sx={{ textAlign: { xs: "left", sm: "right" } }}>
                   <Typography variant="body2">
                     <strong>Date:</strong> {selectedOrder.dateTime ? formatDateTime(selectedOrder.dateTime) : "-"}
                   </Typography>
@@ -437,8 +437,8 @@ const OrderList: React.FC<ComponentProps> = (props) => {
                 loading={false}
               />
 
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 1 }}>
-                <Box sx={{ width: "60%" }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: { xs: "stretch", sm: "center" }, flexDirection: { xs: "column", sm: "row" }, gap: 2, mt: 1 }}>
+                <Box sx={{ width: { xs: "100%", sm: "60%" } }}>
                   <TextField
                     fullWidth
                     size="small"
@@ -447,7 +447,7 @@ const OrderList: React.FC<ComponentProps> = (props) => {
                     onChange={(e) => setReturnReason(e.target.value)}
                   />
                 </Box>
-                <Box sx={{ textAlign: "right" }}>
+                <Box sx={{ textAlign: { xs: "left", sm: "right" } }}>
                   <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
                     Total Refund: {formatCurrency(calculatePendingRefundTotal)}
                   </Typography>
@@ -525,7 +525,7 @@ const OrderList: React.FC<ComponentProps> = (props) => {
           />
         </Modal.Body>
       </Modal>
-    </>
+    </Box>
   );
 };
 

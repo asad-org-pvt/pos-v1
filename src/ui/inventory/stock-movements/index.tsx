@@ -160,18 +160,18 @@ export const StockMovementsView: React.FC = () => {
   }, [filteredMovements, formatCurrency, formatDateTime]);
 
   return (
-    <Box sx={{ p: 2 }}>
+    <Box sx={{ p: { xs: 1.5, sm: 2, md: 3 }, width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box", overflowX: "hidden" }}>
       {/* Control Bar */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, gap: 2, flexWrap: "wrap" }}>
-        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: { xs: "stretch", md: "center" }, mb: 2, gap: 2, flexWrap: "wrap", flexDirection: { xs: "column", md: "row" }, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
+        <Box sx={{ display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap", width: { xs: "100%", md: "auto" } }}>
           <TextField
             size="small"
             placeholder="Search by Product, Reason, Invoice #..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ width: "300px" }}
+            sx={{ width: { xs: "100%", sm: "300px" }, flex: { xs: 1, sm: "none" } }}
           />
-          <FormControl size="small" sx={{ width: "160px" }}>
+          <FormControl size="small" sx={{ width: { xs: "100%", sm: "160px" } }}>
             <InputLabel>Movement Type</InputLabel>
             <Select
               value={typeFilter}
@@ -185,17 +185,18 @@ export const StockMovementsView: React.FC = () => {
               <MenuItem value="ADJUSTMENT">ADJUSTMENT (±)</MenuItem>
             </Select>
           </FormControl>
-          <Button variant="outlined" startIcon={<Refresh />} onClick={loadData} disabled={isLoading}>
+          <Button variant="outlined" startIcon={<Refresh />} onClick={loadData} disabled={isLoading} sx={{ width: { xs: "100%", sm: "auto" } }}>
             Refresh
           </Button>
         </Box>
 
-        <Box sx={{ display: "flex", gap: 1 }}>
+        <Box sx={{ display: "flex", gap: 1, width: { xs: "100%", md: "auto" } }}>
           <Button
             variant="contained"
             color="warning"
             startIcon={<Tune />}
             onClick={() => setShowAdjustModal(true)}
+            sx={{ flex: { xs: 1, sm: "initial" } }}
           >
             Adjust Stock
           </Button>
@@ -204,6 +205,7 @@ export const StockMovementsView: React.FC = () => {
             startIcon={<FileDownload />}
             onClick={handleExportCsv}
             disabled={filteredMovements.length === 0}
+            sx={{ flex: { xs: 1, sm: "initial" } }}
           >
             Export CSV
           </Button>

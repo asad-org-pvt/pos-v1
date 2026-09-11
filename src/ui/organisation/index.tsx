@@ -26,12 +26,12 @@ export const Organisation: React.FC = () => {
   };
 
   return (
-    <Box sx={{ p: 3, maxWidth: 1400, margin: "0 auto", width: "100%" }}>
+    <Box sx={{ p: { xs: 1.5, sm: 2, md: 3 }, maxWidth: 1400, margin: "0 auto", width: "100%" }}>
       {/* Top Banner */}
       <Paper
         elevation={0}
         sx={{
-          p: 2.5,
+          p: { xs: 1.5, sm: 2.5 },
           mb: 3,
           borderRadius: 2,
           bgcolor: "background.paper",
@@ -45,9 +45,9 @@ export const Organisation: React.FC = () => {
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-          <Business color="primary" sx={{ fontSize: 36 }} />
+          <Business color="primary" sx={{ fontSize: { xs: 28, sm: 36 } }} />
           <Box>
-            <Typography variant="h5" fontWeight="bold" color="text.primary">
+            <Typography variant="h5" fontWeight="bold" color="text.primary" sx={{ fontSize: { xs: "1.25rem", sm: "1.5rem" } }}>
               Organizations & Branch Profiles
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -61,7 +61,7 @@ export const Organisation: React.FC = () => {
           color="primary"
           startIcon={<AddIcon />}
           onClick={() => setShowAddDrawer(true)}
-          sx={{ px: 3, py: 1, fontWeight: 700 }}
+          sx={{ px: 3, py: 1, fontWeight: 700, width: { xs: "100%", sm: "auto" } }}
         >
           Add Organization
         </Button>
@@ -76,7 +76,7 @@ export const Organisation: React.FC = () => {
         open={showAddDrawer}
         onClose={() => setShowAddDrawer(false)}
         PaperProps={{
-          sx: { width: { xs: "100%", sm: 600, md: 720 }, p: 3 },
+          sx: { width: { xs: "100%", sm: 600, md: 720 }, p: { xs: 1.5, sm: 3 } },
         }}
       >
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>

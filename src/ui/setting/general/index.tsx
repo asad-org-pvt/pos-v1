@@ -48,8 +48,8 @@ export const GeneralSettings: React.FC = () => {
   }
 
   return (
-    <Card sx={{ maxWidth: 900, m: "0 auto", borderRadius: 2, boxShadow: 2 }}>
-      <CardContent>
+    <Card sx={{ width: "100%", maxWidth: 900, m: "0 auto", borderRadius: 2, boxShadow: 2, boxSizing: "border-box", overflow: "hidden" }}>
+      <CardContent sx={{ p: { xs: 1.5, sm: 3 } }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
           <Business color="primary" />
           <Typography variant="h6" fontWeight="bold">
@@ -60,7 +60,7 @@ export const GeneralSettings: React.FC = () => {
         <Divider sx={{ mb: 3 }} />
 
         <form onSubmit={handleSave}>
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
             {/* 1. BUSINESS PROFILE */}
             <Grid item xs={12}>
               <Typography variant="subtitle1" fontWeight="700" sx={{ display: "flex", alignItems: "center", gap: 1, color: "primary.main" }}>
@@ -276,6 +276,7 @@ export const GeneralSettings: React.FC = () => {
                   color="primary"
                   startIcon={<SaveIcon />}
                   disabled={saving}
+                  sx={{ width: { xs: "100%", sm: "auto" } }}
                 >
                   {saving ? "Saving..." : "Save Organization Settings"}
                 </Button>

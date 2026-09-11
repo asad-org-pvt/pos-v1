@@ -291,7 +291,7 @@ export const PurchasingView: React.FC = () => {
           <td><strong>{formatCurrency(po.total || 0)}</strong></td>
           <td>{getStatusChip(po.status)}</td>
           <td>
-            <Box sx={{ display: "flex", gap: 1 }}>
+            <Box sx={{ display: "flex", gap: 0.5, flexWrap: "nowrap" }}>
               {isReceivable && (
                 <Button
                   size="small"
@@ -321,14 +321,14 @@ export const PurchasingView: React.FC = () => {
   }, [filteredOrders, formatCurrency]);
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: { xs: 1.5, sm: 2, md: 3 }, width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box", overflowX: "hidden" }}>
       {/* Procurement Metrics */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
+      <Grid container spacing={{ xs: 1.5, sm: 2 }} sx={{ mb: 3 }}>
+        <Grid item xs={6} sm={6} md={3}>
           <Card sx={{ borderLeft: "4px solid #1976d2" }}>
             <CardContent sx={{ py: 1.5, "&:last-child": { pb: 1.5 } }}>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <Typography color="text.secondary" variant="caption" fontWeight="bold">
+                <Typography color="text.secondary" variant="caption" fontWeight="bold" noWrap>
                   TOTAL ORDERS
                 </Typography>
                 <ReceiptLong color="primary" fontSize="small" />
@@ -340,11 +340,11 @@ export const PurchasingView: React.FC = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={6} md={3}>
           <Card sx={{ borderLeft: "4px solid #ed6c02" }}>
             <CardContent sx={{ py: 1.5, "&:last-child": { pb: 1.5 } }}>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <Typography color="warning.main" variant="caption" fontWeight="bold">
+                <Typography color="warning.main" variant="caption" fontWeight="bold" noWrap>
                   OPEN / PENDING
                 </Typography>
                 <PendingActions color="warning" fontSize="small" />
@@ -356,11 +356,11 @@ export const PurchasingView: React.FC = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={6} md={3}>
           <Card sx={{ borderLeft: "4px solid #9c27b0" }}>
             <CardContent sx={{ py: 1.5, "&:last-child": { pb: 1.5 } }}>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <Typography color="secondary.main" variant="caption" fontWeight="bold">
+                <Typography color="secondary.main" variant="caption" fontWeight="bold" noWrap>
                   PARTIAL DELIVERIES
                 </Typography>
                 <LocalShipping color="secondary" fontSize="small" />
@@ -372,16 +372,16 @@ export const PurchasingView: React.FC = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={6} md={3}>
           <Card sx={{ borderLeft: "4px solid #2e7d32" }}>
             <CardContent sx={{ py: 1.5, "&:last-child": { pb: 1.5 } }}>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <Typography color="success.main" variant="caption" fontWeight="bold">
-                  TOTAL PROCUREMENT
+                <Typography color="success.main" variant="caption" fontWeight="bold" noWrap>
+                  TOTAL SPEND
                 </Typography>
                 <CheckCircle color="success" fontSize="small" />
               </Box>
-              <Typography variant="h5" fontWeight="bold" color="success.main" sx={{ mt: 0.5 }}>
+              <Typography variant="h5" fontWeight="bold" color="success.main" sx={{ mt: 0.5, fontSize: { xs: "1.1rem", sm: "1.5rem" } }}>
                 ${kpis.totalSpend.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </Typography>
             </CardContent>
@@ -390,17 +390,17 @@ export const PurchasingView: React.FC = () => {
       </Grid>
 
       {/* Header Bar */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, gap: 2, flexWrap: "wrap" }}>
-        <Box sx={{ display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap" }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: { xs: "stretch", md: "center" }, mb: 2, gap: 1.5, flexWrap: "wrap", flexDirection: { xs: "column", md: "row" }, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
+        <Box sx={{ display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap", width: { xs: "100%", md: "auto" } }}>
           <TextField
             size="small"
             placeholder="Search by PO #, Supplier..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ width: 220 }}
+            sx={{ width: { xs: "100%", sm: 220 } }}
           />
 
-          <FormControl size="small" sx={{ width: 160 }}>
+          <FormControl size="small" sx={{ width: { xs: "100%", sm: 160 } }}>
             <InputLabel>Status</InputLabel>
             <Select
               value={statusFilter}
@@ -415,7 +415,7 @@ export const PurchasingView: React.FC = () => {
             </Select>
           </FormControl>
 
-          <FormControl size="small" sx={{ width: 180 }}>
+          <FormControl size="small" sx={{ width: { xs: "100%", sm: 180 } }}>
             <InputLabel>Supplier</InputLabel>
             <Select
               value={supplierFilter}
@@ -431,25 +431,27 @@ export const PurchasingView: React.FC = () => {
             </Select>
           </FormControl>
 
-          <Button variant="outlined" startIcon={<Refresh />} onClick={loadData} disabled={isLoading}>
+          <Button variant="outlined" startIcon={<Refresh />} onClick={loadData} disabled={isLoading} sx={{ width: { xs: "100%", sm: "auto" } }}>
             Refresh
           </Button>
         </Box>
 
-        <Box sx={{ display: "flex", gap: 1 }}>
+        <Box sx={{ display: "flex", gap: 1, width: { xs: "100%", md: "auto" }, flexWrap: "wrap" }}>
           <Button
             variant="contained"
             color="primary"
             startIcon={<Add />}
             onClick={() => setShowCreateModal(true)}
+            sx={{ flex: { xs: 1, sm: "initial" } }}
           >
-            Create Purchase Order
+            Create PO
           </Button>
           <Button
             variant="outlined"
             startIcon={<FileDownload />}
             onClick={handleExportCsv}
             disabled={filteredOrders.length === 0}
+            sx={{ flex: { xs: 1, sm: "initial" } }}
           >
             Export CSV
           </Button>
@@ -549,15 +551,15 @@ export const PurchasingView: React.FC = () => {
               />
             )}
 
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: { xs: "stretch", sm: "center" }, flexDirection: { xs: "column", sm: "row" }, gap: 2 }}>
               <TextField
                 label="PO Notes (Optional)"
                 size="small"
                 value={poNotes}
                 onChange={(e) => setPoNotes(e.target.value)}
-                sx={{ width: "60%" }}
+                sx={{ width: { xs: "100%", sm: "60%" } }}
               />
-              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+              <Typography variant="h6" sx={{ fontWeight: "bold", textAlign: { xs: "right", sm: "left" } }}>
                 Total: {formatCurrency(calculatedPoTotal)}
               </Typography>
             </Box>

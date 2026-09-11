@@ -130,10 +130,10 @@ export const PrinterSettings: React.FC = () => {
   }
 
   return (
-    <Card sx={{ maxWidth: 800, m: 2, borderRadius: 2, boxShadow: 2 }}>
-      <CardContent>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-          <Typography variant="h6" sx={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: 1 }}>
+    <Card sx={{ width: "100%", maxWidth: 800, m: "0 auto", borderRadius: 2, boxShadow: 2, boxSizing: "border-box", overflow: "hidden" }}>
+      <CardContent sx={{ p: { xs: 1.5, sm: 3 } }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, flexWrap: "wrap", gap: 1 }}>
+          <Typography variant="h6" sx={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: 1, fontSize: { xs: "1rem", sm: "1.25rem" } }}>
             <PrintIcon color="primary" /> Thermal Printer Configuration
           </Typography>
           <FormControlLabel
@@ -151,7 +151,7 @@ export const PrinterSettings: React.FC = () => {
         <Divider sx={{ mb: 3 }} />
 
         <form onSubmit={handleSave}>
-          <Grid container spacing={2.5}>
+          <Grid container spacing={{ xs: 2, sm: 2.5 }}>
             {/* Printer Name */}
             <Grid item xs={12} sm={6}>
               <TextField
@@ -343,13 +343,14 @@ export const PrinterSettings: React.FC = () => {
 
             {/* Action Buttons */}
             <Grid item xs={12}>
-              <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end", mt: 1 }}>
+              <Box sx={{ display: "flex", gap: 1.5, justifyContent: "flex-end", mt: 1, flexWrap: "wrap" }}>
                 <Button
                   variant="outlined"
                   color="secondary"
                   startIcon={<PrintIcon />}
                   disabled={testing || saving}
                   onClick={handleTestPrint}
+                  sx={{ flex: { xs: 1, sm: "initial" } }}
                 >
                   {testing ? "Testing..." : "Test Print"}
                 </Button>
@@ -359,6 +360,7 @@ export const PrinterSettings: React.FC = () => {
                   color="primary"
                   startIcon={<SaveIcon />}
                   disabled={saving || testing}
+                  sx={{ flex: { xs: 1, sm: "initial" } }}
                 >
                   {saving ? "Saving..." : "Save Configuration"}
                 </Button>

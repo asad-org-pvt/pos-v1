@@ -83,8 +83,8 @@ export const PosBusinessSettings: React.FC = () => {
   }
 
   return (
-    <Card sx={{ maxWidth: 900, m: "0 auto", borderRadius: 2, boxShadow: 2 }}>
-      <CardContent>
+    <Card sx={{ width: "100%", maxWidth: 900, m: "0 auto", borderRadius: 2, boxShadow: 2, boxSizing: "border-box", overflow: "hidden" }}>
+      <CardContent sx={{ p: { xs: 1.5, sm: 3 } }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
           <PointOfSale color="primary" />
           <Typography variant="h6" fontWeight="bold">
@@ -95,7 +95,7 @@ export const PosBusinessSettings: React.FC = () => {
         <Divider sx={{ mb: 3 }} />
 
         <form onSubmit={handleSave}>
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
             {/* 1. CURRENCY SECTION */}
             <Grid item xs={12}>
               <Typography variant="subtitle1" fontWeight="700" sx={{ display: "flex", alignItems: "center", gap: 1, color: "primary.main" }}>
@@ -234,7 +234,7 @@ export const PosBusinessSettings: React.FC = () => {
                       </Box>
                     </Box>
 
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap", width: { xs: "100%", sm: "auto" } }}>
                       <Chip
                         label={`Preview: ${formatCurrency(1250.5, formData)}`}
                         color="primary"
@@ -246,6 +246,7 @@ export const PosBusinessSettings: React.FC = () => {
                         size="small"
                         variant="outlined"
                         startIcon={<MyLocation />}
+                        sx={{ width: { xs: "100%", sm: "auto" } }}
                         onClick={() => {
                           const loc = getDetectedLocationInfo();
                           const detected = autoDetectCurrency();
@@ -278,7 +279,7 @@ export const PosBusinessSettings: React.FC = () => {
               </Typography>
             </Grid>
 
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <FormControlLabel
                 control={
                   <Switch
@@ -291,7 +292,7 @@ export const PosBusinessSettings: React.FC = () => {
               />
             </Grid>
 
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <TextField
                 fullWidth
                 size="small"
@@ -305,7 +306,7 @@ export const PosBusinessSettings: React.FC = () => {
               />
             </Grid>
 
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <FormControlLabel
                 control={
                   <Switch
@@ -318,7 +319,7 @@ export const PosBusinessSettings: React.FC = () => {
               />
             </Grid>
 
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <TextField
                 fullWidth
                 size="small"
@@ -332,7 +333,7 @@ export const PosBusinessSettings: React.FC = () => {
               />
             </Grid>
 
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <TextField
                 fullWidth
                 size="small"
@@ -441,13 +442,13 @@ export const PosBusinessSettings: React.FC = () => {
                     />
                   ))}
                 </Box>
-                <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                <Box sx={{ display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap" }}>
                   <TextField
                     id="new-preset-amount-input"
                     size="small"
                     type="number"
                     placeholder="New amount (e.g. 500)"
-                    sx={{ width: 180 }}
+                    sx={{ width: { xs: "100%", sm: 180 } }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
@@ -473,6 +474,7 @@ export const PosBusinessSettings: React.FC = () => {
                   <Button
                     size="small"
                     variant="outlined"
+                    sx={{ width: { xs: "100%", sm: "auto" } }}
                     onClick={() => {
                       const inputEl = document.getElementById("new-preset-amount-input") as HTMLInputElement;
                       if (!inputEl) return;
@@ -541,6 +543,7 @@ export const PosBusinessSettings: React.FC = () => {
                   color="primary"
                   startIcon={<SaveIcon />}
                   disabled={saving}
+                  sx={{ width: { xs: "100%", sm: "auto" } }}
                 >
                   {saving ? "Saving..." : "Save Business Settings"}
                 </Button>

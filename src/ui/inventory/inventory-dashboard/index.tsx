@@ -106,11 +106,11 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   }, [products]);
 
   return (
-    <Box sx={{ p: 3, bgcolor: "background.default" }}>
+    <Box sx={{ p: { xs: 1.5, sm: 2, md: 3 }, bgcolor: "background.default", width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box", overflowX: "hidden" }}>
       {/* Header */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3, flexWrap: "wrap", gap: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: { xs: "stretch", sm: "center" }, mb: 3, flexWrap: "wrap", gap: 2, flexDirection: { xs: "column", sm: "row" } }}>
         <Box>
-          <Typography variant="h5" fontWeight="bold" color="text.primary">
+          <Typography variant="h5" fontWeight="bold" color="text.primary" sx={{ fontSize: { xs: "1.25rem", sm: "1.5rem" } }}>
             Inventory & Stock Operations Dashboard
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -118,11 +118,11 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           </Typography>
         </Box>
         <Box sx={{ display: "flex", gap: 1 }}>
-          <Button variant="outlined" startIcon={<Refresh />} onClick={loadData} disabled={isLoading}>
+          <Button variant="outlined" startIcon={<Refresh />} onClick={loadData} disabled={isLoading} sx={{ flex: { xs: 1, sm: "initial" } }}>
             Refresh
           </Button>
           {onOpenAdjustModal && (
-            <Button variant="contained" color="warning" startIcon={<Tune />} onClick={onOpenAdjustModal}>
+            <Button variant="contained" color="warning" startIcon={<Tune />} onClick={onOpenAdjustModal} sx={{ flex: { xs: 1, sm: "initial" } }}>
               Quick Adjust
             </Button>
           )}
@@ -132,9 +132,9 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       {isLoading && <LinearProgress sx={{ mb: 2 }} />}
 
       {/* KPI Cards */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
+      <Grid container spacing={{ xs: 1.5, sm: 2 }} sx={{ mb: 3 }}>
         {/* Total Products */}
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={6} md={3}>
           <Card
             sx={{
               height: "100%",
@@ -149,20 +149,20 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               "&:hover": { transform: "translateY(-2px)" },
             }}
           >
-            <CardContent sx={{ p: 2.5 }}>
+            <CardContent sx={{ p: { xs: 1.5, sm: 2.5 } }}>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 1.5 }}>
                 <Box>
-                  <Typography variant="caption" sx={{ textTransform: "uppercase", letterSpacing: 0.5, fontWeight: 700, color: "text.secondary" }}>
+                  <Typography variant="caption" sx={{ textTransform: "uppercase", letterSpacing: 0.5, fontWeight: 700, color: "text.secondary" }} noWrap>
                     Total Products
                   </Typography>
-                  <Typography variant="h4" fontWeight="800" sx={{ mt: 0.5, color: "text.primary" }}>
+                  <Typography variant="h4" fontWeight="800" sx={{ mt: 0.5, color: "text.primary", fontSize: { xs: "1.4rem", sm: "2.125rem" } }}>
                     {stats.totalProducts}
                   </Typography>
                 </Box>
                 <Box
                   sx={{
-                    width: 44,
-                    height: 44,
+                    width: { xs: 36, sm: 44 },
+                    height: { xs: 36, sm: 44 },
                     borderRadius: "12px",
                     display: "flex",
                     alignItems: "center",
@@ -171,10 +171,10 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     color: "primary.main",
                   }}
                 >
-                  <Inventory fontSize="medium" />
+                  <Inventory fontSize="small" />
                 </Box>
               </Box>
-              <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.8rem" }}>
+              <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.75rem" }}>
                 <strong>{stats.totalUnits.toLocaleString()}</strong> units on hand
               </Typography>
             </CardContent>
@@ -182,7 +182,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         </Grid>
 
         {/* Low Stock Alerts */}
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={6} md={3}>
           <Card
             sx={{
               height: "100%",
@@ -197,20 +197,20 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               "&:hover": { transform: "translateY(-2px)" },
             }}
           >
-            <CardContent sx={{ p: 2.5 }}>
+            <CardContent sx={{ p: { xs: 1.5, sm: 2.5 } }}>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 1.5 }}>
                 <Box>
-                  <Typography variant="caption" sx={{ textTransform: "uppercase", letterSpacing: 0.5, fontWeight: 700, color: "warning.main" }}>
+                  <Typography variant="caption" sx={{ textTransform: "uppercase", letterSpacing: 0.5, fontWeight: 700, color: "warning.main" }} noWrap>
                     Low Stock Alerts
                   </Typography>
-                  <Typography variant="h4" fontWeight="800" sx={{ mt: 0.5, color: "text.primary" }}>
+                  <Typography variant="h4" fontWeight="800" sx={{ mt: 0.5, color: "text.primary", fontSize: { xs: "1.4rem", sm: "2.125rem" } }}>
                     {stats.lowStockItems.length}
                   </Typography>
                 </Box>
                 <Box
                   sx={{
-                    width: 44,
-                    height: 44,
+                    width: { xs: 36, sm: 44 },
+                    height: { xs: 36, sm: 44 },
                     borderRadius: "12px",
                     display: "flex",
                     alignItems: "center",
@@ -219,18 +219,18 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     color: "warning.main",
                   }}
                 >
-                  <Warning fontSize="medium" />
+                  <Warning fontSize="small" />
                 </Box>
               </Box>
-              <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.8rem" }}>
-                At or below reorder threshold
+              <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.75rem" }}>
+                Reorder needed
               </Typography>
             </CardContent>
           </Card>
         </Grid>
 
         {/* Out of Stock */}
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={6} md={3}>
           <Card
             sx={{
               height: "100%",
@@ -245,20 +245,20 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               "&:hover": { transform: "translateY(-2px)" },
             }}
           >
-            <CardContent sx={{ p: 2.5 }}>
+            <CardContent sx={{ p: { xs: 1.5, sm: 2.5 } }}>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 1.5 }}>
                 <Box>
-                  <Typography variant="caption" sx={{ textTransform: "uppercase", letterSpacing: 0.5, fontWeight: 700, color: "error.main" }}>
+                  <Typography variant="caption" sx={{ textTransform: "uppercase", letterSpacing: 0.5, fontWeight: 700, color: "error.main" }} noWrap>
                     Out of Stock
                   </Typography>
-                  <Typography variant="h4" fontWeight="800" sx={{ mt: 0.5, color: "text.primary" }}>
+                  <Typography variant="h4" fontWeight="800" sx={{ mt: 0.5, color: "text.primary", fontSize: { xs: "1.4rem", sm: "2.125rem" } }}>
                     {stats.outOfStockItems.length}
                   </Typography>
                 </Box>
                 <Box
                   sx={{
-                    width: 44,
-                    height: 44,
+                    width: { xs: 36, sm: 44 },
+                    height: { xs: 36, sm: 44 },
                     borderRadius: "12px",
                     display: "flex",
                     alignItems: "center",
@@ -267,18 +267,18 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     color: "error.main",
                   }}
                 >
-                  <ErrorOutline fontSize="medium" />
+                  <ErrorOutline fontSize="small" />
                 </Box>
               </Box>
-              <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.8rem" }}>
-                Critical replenishment required
+              <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.75rem" }}>
+                Critical replenishment
               </Typography>
             </CardContent>
           </Card>
         </Grid>
 
         {/* Inventory Value */}
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={6} md={3}>
           <Card
             sx={{
               height: "100%",
@@ -293,20 +293,20 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               "&:hover": { transform: "translateY(-2px)" },
             }}
           >
-            <CardContent sx={{ p: 2.5 }}>
+            <CardContent sx={{ p: { xs: 1.5, sm: 2.5 } }}>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 1.5 }}>
                 <Box>
-                  <Typography variant="caption" sx={{ textTransform: "uppercase", letterSpacing: 0.5, fontWeight: 700, color: "success.main" }}>
-                    Inventory Valuation
+                  <Typography variant="caption" sx={{ textTransform: "uppercase", letterSpacing: 0.5, fontWeight: 700, color: "success.main" }} noWrap>
+                    Valuation
                   </Typography>
-                  <Typography variant="h4" fontWeight="800" sx={{ mt: 0.5, color: "text.primary" }}>
+                  <Typography variant="h4" fontWeight="800" sx={{ mt: 0.5, color: "text.primary", fontSize: { xs: "1.15rem", sm: "1.75rem" } }}>
                     {formatCurrency(stats.totalRetailValue)}
                   </Typography>
                 </Box>
                 <Box
                   sx={{
-                    width: 44,
-                    height: 44,
+                    width: { xs: 36, sm: 44 },
+                    height: { xs: 36, sm: 44 },
                     borderRadius: "12px",
                     display: "flex",
                     alignItems: "center",
@@ -315,11 +315,11 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     color: "success.main",
                   }}
                 >
-                  <AttachMoney fontSize="medium" />
+                  <AttachMoney fontSize="small" />
                 </Box>
               </Box>
-              <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.8rem" }}>
-                Cost basis: <strong>{formatCurrency(stats.totalCostValue)}</strong>
+              <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.75rem" }}>
+                Cost: <strong>{formatCurrency(stats.totalCostValue)}</strong>
               </Typography>
             </CardContent>
           </Card>
@@ -327,17 +327,22 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       </Grid>
 
       {/* Actionable Alerts & Recent Activity */}
-      <Grid container spacing={3}>
+      <Grid container spacing={{ xs: 2, md: 3 }}>
         {/* Replenishment Alert Table */}
-        <Grid item xs={12} md={7}>
+        <Grid item xs={12} md={7} sx={{ minWidth: 0, width: "100%" }}>
           <Paper
             sx={{
-              p: 2.5,
+              p: { xs: 1.5, sm: 2.5 },
               height: "100%",
               borderRadius: 2,
               border: "1px solid",
               borderColor: "divider",
               bgcolor: "background.paper",
+              width: "100%",
+              maxWidth: "100%",
+              minWidth: 0,
+              boxSizing: "border-box",
+              overflow: "hidden",
               boxShadow: (theme) => theme.palette.mode === "dark" ? "0 2px 8px rgba(0,0,0,0.4)" : "0 2px 8px rgba(0,0,0,0.04)",
             }}
           >
@@ -359,8 +364,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                 </Typography>
               </Box>
             ) : (
-              <TableContainer sx={{ maxHeight: 320, borderRadius: 1, border: "1px solid", borderColor: "divider" }}>
-                <Table size="small" stickyHeader>
+              <TableContainer sx={{ maxHeight: 320, borderRadius: 1, border: "1px solid", borderColor: "divider", width: "100%", maxWidth: "100%", minWidth: 0, overflowX: "auto", boxSizing: "border-box" }}>
+                <Table size="small" stickyHeader sx={{ minWidth: 460 }}>
                   <TableHead>
                     <TableRow>
                       <TableCell><strong>Product Name</strong></TableCell>
@@ -394,15 +399,20 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         </Grid>
 
         {/* Recent Audit Ledger Activity */}
-        <Grid item xs={12} md={5}>
+        <Grid item xs={12} md={5} sx={{ minWidth: 0, width: "100%" }}>
           <Paper
             sx={{
-              p: 2.5,
+              p: { xs: 1.5, sm: 2.5 },
               height: "100%",
               borderRadius: 2,
               border: "1px solid",
               borderColor: "divider",
               bgcolor: "background.paper",
+              width: "100%",
+              maxWidth: "100%",
+              minWidth: 0,
+              boxSizing: "border-box",
+              overflow: "hidden",
               boxShadow: (theme) => theme.palette.mode === "dark" ? "0 2px 8px rgba(0,0,0,0.4)" : "0 2px 8px rgba(0,0,0,0.04)",
             }}
           >
@@ -420,8 +430,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                 </Typography>
               </Box>
             ) : (
-              <TableContainer sx={{ maxHeight: 320, borderRadius: 1, border: "1px solid", borderColor: "divider" }}>
-                <Table size="small" stickyHeader>
+              <TableContainer sx={{ maxHeight: 320, borderRadius: 1, border: "1px solid", borderColor: "divider", width: "100%", maxWidth: "100%", minWidth: 0, overflowX: "auto", boxSizing: "border-box" }}>
+                <Table size="small" stickyHeader sx={{ minWidth: 320 }}>
                   <TableHead>
                     <TableRow>
                       <TableCell><strong>Product</strong></TableCell>

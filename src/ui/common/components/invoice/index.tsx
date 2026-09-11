@@ -21,7 +21,6 @@ import {
   Chip,
   Paper,
   InputAdornment,
-  Divider,
 } from "@mui/material";
 import {
   AddCircleOutline,
@@ -563,6 +562,7 @@ export const Invoice: React.FC<ExtendedInvoiceProps> = ({
               key={idx}
               sx={{
                 display: "flex",
+                flexWrap: "wrap",
                 gap: 0.8,
                 alignItems: "center",
                 mb: 1,
@@ -573,7 +573,7 @@ export const Invoice: React.FC<ExtendedInvoiceProps> = ({
                 borderColor: "divider",
               }}
             >
-              <FormControl size="small" sx={{ width: 95 }}>
+              <FormControl size="small" sx={{ width: { xs: "calc(50% - 4px)", sm: 95 }, minWidth: 80 }}>
                 <Select
                   value={row.method}
                   onChange={(e) => handleSplitRowChange(idx, "method", e.target.value)}
@@ -591,7 +591,7 @@ export const Invoice: React.FC<ExtendedInvoiceProps> = ({
                 type="number"
                 value={row.amount}
                 onChange={(e) => handleSplitRowChange(idx, "amount", parseFloat(e.target.value) || 0)}
-                sx={{ width: 95, "& input": { fontSize: "12px", py: "6px" } }}
+                sx={{ width: { xs: "calc(50% - 4px)", sm: 95 }, minWidth: 80, "& input": { fontSize: "12px", py: "6px" } }}
                 InputProps={{
                   startAdornment: <InputAdornment position="start" sx={{ "& p": { fontSize: "11px" } }}>$</InputAdornment>,
                 }}
@@ -606,7 +606,7 @@ export const Invoice: React.FC<ExtendedInvoiceProps> = ({
                   onChange={(e) =>
                     handleSplitRowChange(idx, "amountTendered", parseFloat(e.target.value) || 0)
                   }
-                  sx={{ width: 90, "& input": { fontSize: "12px", py: "6px" } }}
+                  sx={{ flex: 1, minWidth: 90, "& input": { fontSize: "12px", py: "6px" } }}
                   InputProps={{
                     startAdornment: <InputAdornment position="start" sx={{ "& p": { fontSize: "11px" } }}>$</InputAdornment>,
                   }}
@@ -617,7 +617,7 @@ export const Invoice: React.FC<ExtendedInvoiceProps> = ({
                   label="Ref #"
                   value={row.reference || ""}
                   onChange={(e) => handleSplitRowChange(idx, "reference", e.target.value)}
-                  sx={{ flex: 1, "& input": { fontSize: "12px", py: "6px" } }}
+                  sx={{ flex: 1, minWidth: 90, "& input": { fontSize: "12px", py: "6px" } }}
                 />
               )}
 

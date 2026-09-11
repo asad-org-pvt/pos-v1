@@ -218,8 +218,8 @@ export const BulkProductImportModal: React.FC<BulkProductImportModalProps> = ({
               </Typography>
             </Paper>
 
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", bgcolor: "background.default", p: 2, borderRadius: 1 }}>
-              <Box sx={{ textAlign: "left" }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: { xs: "stretch", sm: "center" }, flexDirection: { xs: "column", sm: "row" }, bgcolor: "background.default", p: 2, borderRadius: 1, gap: 2 }}>
+              <Box sx={{ textAlign: { xs: "center", sm: "left" } }}>
                 <Typography variant="subtitle2" fontWeight="bold">
                   Need a starting template?
                 </Typography>
@@ -231,8 +231,9 @@ export const BulkProductImportModal: React.FC<BulkProductImportModalProps> = ({
                 variant="outlined"
                 startIcon={<FileDownload />}
                 onClick={handleDownloadSampleCsv}
+                sx={{ width: { xs: "100%", sm: "auto" } }}
               >
-                Download Sample CSV Template
+                Download Sample CSV
               </Button>
             </Box>
 
@@ -334,7 +335,7 @@ export const BulkProductImportModal: React.FC<BulkProductImportModalProps> = ({
 
             {/* Preview Table */}
             <TableContainer sx={{ maxHeight: 340, border: "1px solid", borderColor: "divider", borderRadius: 1 }}>
-              <Table size="small" stickyHeader>
+              <Table size="small" stickyHeader sx={{ minWidth: 750 }}>
                 <TableHead>
                   <TableRow>
                     <TableCell><strong>Row #</strong></TableCell>

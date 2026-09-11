@@ -122,9 +122,9 @@ const Users: React.FC = () => {
   };
 
   return (
-    <Box sx={{ p: { xs: 2, md: 3 }, width: "100%", maxWidth: 1400, mx: "auto" }}>
+    <Box sx={{ p: { xs: 1.5, sm: 2, md: 3 }, width: "100%", maxWidth: 1400, mx: "auto", minWidth: 0, boxSizing: "border-box", overflowX: "hidden" }}>
       {/* HEADER */}
-      <Box sx={{ mb: 3, display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 2 }}>
+      <Box sx={{ mb: 3, display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 2, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
         <Box>
           <Typography variant="h5" fontWeight="bold" color="text.primary">
             People & Partner Directory
@@ -134,14 +134,14 @@ const Users: React.FC = () => {
           </Typography>
         </Box>
 
-        <Box sx={{ display: "flex", gap: 1.5 }}>
+        <Box sx={{ display: "flex", gap: 1.5, width: { xs: "100%", sm: "auto" } }}>
           {activeTab === 0 && (
             <Button
               variant="contained"
               color="primary"
               startIcon={<PersonAdd />}
               onClick={() => handleOpenDrawer("CUSTOMER")}
-              sx={{ borderRadius: 2, fontWeight: "bold" }}
+              sx={{ borderRadius: 2, fontWeight: "bold", width: { xs: "100%", sm: "auto" } }}
             >
               Add New Customer
             </Button>
@@ -152,7 +152,7 @@ const Users: React.FC = () => {
               color="primary"
               startIcon={<AddBusiness />}
               onClick={() => handleOpenDrawer("SUPPLIER")}
-              sx={{ borderRadius: 2, fontWeight: "bold" }}
+              sx={{ borderRadius: 2, fontWeight: "bold", width: { xs: "100%", sm: "auto" } }}
             >
               Add New Supplier
             </Button>
@@ -163,7 +163,7 @@ const Users: React.FC = () => {
               color="primary"
               startIcon={<PersonAdd />}
               onClick={() => handleOpenDrawer("EMPLOYEE")}
-              sx={{ borderRadius: 2, fontWeight: "bold" }}
+              sx={{ borderRadius: 2, fontWeight: "bold", width: { xs: "100%", sm: "auto" } }}
             >
               Add New Staff Member
             </Button>
@@ -172,81 +172,81 @@ const Users: React.FC = () => {
       </Box>
 
       {/* KPI METRIC CARDS */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
+      <Grid container spacing={{ xs: 1.5, sm: 2 }} sx={{ mb: 3 }}>
+        <Grid item xs={6} sm={6} md={3}>
           <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2, bgcolor: "background.paper" }}>
-            <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+            <CardContent sx={{ p: { xs: 1.5, sm: 2 }, "&:last-child": { pb: { xs: 1.5, sm: 2 } } }}>
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <Box>
-                  <Typography variant="caption" color="text.secondary" fontWeight="500">
-                    Total Customers
+                  <Typography variant="caption" color="text.secondary" fontWeight="500" noWrap>
+                    Customers
                   </Typography>
-                  <Typography variant="h5" fontWeight="bold" color="text.primary">
+                  <Typography variant="h5" fontWeight="bold" color="text.primary" sx={{ fontSize: { xs: "1.3rem", sm: "1.5rem" } }}>
                     {customerCount}
                   </Typography>
                 </Box>
-                <Box sx={{ p: 1, borderRadius: 2, bgcolor: "info.light", color: "info.dark", display: "flex" }}>
-                  <PeopleIcon />
+                <Box sx={{ p: { xs: 0.75, sm: 1 }, borderRadius: 2, bgcolor: "info.light", color: "info.dark", display: "flex" }}>
+                  <PeopleIcon fontSize="small" />
                 </Box>
               </Box>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={6} md={3}>
           <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2, bgcolor: "background.paper" }}>
-            <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+            <CardContent sx={{ p: { xs: 1.5, sm: 2 }, "&:last-child": { pb: { xs: 1.5, sm: 2 } } }}>
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <Box>
-                  <Typography variant="caption" color="text.secondary" fontWeight="500">
-                    Suppliers & Vendors
+                  <Typography variant="caption" color="text.secondary" fontWeight="500" noWrap>
+                    Suppliers
                   </Typography>
-                  <Typography variant="h5" fontWeight="bold" color="text.primary">
+                  <Typography variant="h5" fontWeight="bold" color="text.primary" sx={{ fontSize: { xs: "1.3rem", sm: "1.5rem" } }}>
                     {supplierCount}
                   </Typography>
                 </Box>
-                <Box sx={{ p: 1, borderRadius: 2, bgcolor: "secondary.light", color: "secondary.dark", display: "flex" }}>
-                  <SupplierIcon />
+                <Box sx={{ p: { xs: 0.75, sm: 1 }, borderRadius: 2, bgcolor: "secondary.light", color: "secondary.dark", display: "flex" }}>
+                  <SupplierIcon fontSize="small" />
                 </Box>
               </Box>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={6} md={3}>
           <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2, bgcolor: "background.paper" }}>
-            <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+            <CardContent sx={{ p: { xs: 1.5, sm: 2 }, "&:last-child": { pb: { xs: 1.5, sm: 2 } } }}>
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <Box>
-                  <Typography variant="caption" color="text.secondary" fontWeight="500">
-                    Staff & Cashiers
+                  <Typography variant="caption" color="text.secondary" fontWeight="500" noWrap>
+                    Staff
                   </Typography>
-                  <Typography variant="h5" fontWeight="bold" color="text.primary">
+                  <Typography variant="h5" fontWeight="bold" color="text.primary" sx={{ fontSize: { xs: "1.3rem", sm: "1.5rem" } }}>
                     {employeeCount}
                   </Typography>
                 </Box>
-                <Box sx={{ p: 1, borderRadius: 2, bgcolor: "primary.light", color: "primary.dark", display: "flex" }}>
-                  <StaffIcon />
+                <Box sx={{ p: { xs: 0.75, sm: 1 }, borderRadius: 2, bgcolor: "primary.light", color: "primary.dark", display: "flex" }}>
+                  <StaffIcon fontSize="small" />
                 </Box>
               </Box>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={6} md={3}>
           <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2, bgcolor: "background.paper" }}>
-            <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+            <CardContent sx={{ p: { xs: 1.5, sm: 2 }, "&:last-child": { pb: { xs: 1.5, sm: 2 } } }}>
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <Box>
-                  <Typography variant="caption" color="text.secondary" fontWeight="500">
-                    Customer Revenue
+                  <Typography variant="caption" color="text.secondary" fontWeight="500" noWrap>
+                    Customer Spend
                   </Typography>
-                  <Typography variant="h6" fontWeight="bold" color="success.main">
+                  <Typography variant="h6" fontWeight="bold" color="success.main" sx={{ fontSize: { xs: "1rem", sm: "1.25rem" } }}>
                     {formatCurrency(totalCustomerSpend)}
                   </Typography>
                 </Box>
-                <Box sx={{ p: 1, borderRadius: 2, bgcolor: "success.light", color: "success.dark", display: "flex" }}>
-                  <TrendingUp />
+                <Box sx={{ p: { xs: 0.75, sm: 1 }, borderRadius: 2, bgcolor: "success.light", color: "success.dark", display: "flex" }}>
+                  <TrendingUp fontSize="small" />
                 </Box>
               </Box>
             </CardContent>
@@ -255,13 +255,16 @@ const Users: React.FC = () => {
       </Grid>
 
       {/* DIRECTORY TABS */}
-      <Paper elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2, bgcolor: "background.paper", overflow: "hidden" }}>
-        <Box sx={{ borderBottom: 1, borderColor: "divider", px: 2, pt: 1, bgcolor: "action.hover" }}>
+      <Paper elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2, bgcolor: "background.paper", overflow: "hidden", width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box" }}>
+        <Box sx={{ borderBottom: 1, borderColor: "divider", px: { xs: 1, sm: 2 }, pt: 1, bgcolor: "action.hover", width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
           <Tabs
             value={activeTab}
             onChange={(_, val) => setActiveTab(val)}
             textColor="primary"
             indicatorColor="primary"
+            variant="scrollable"
+            scrollButtons="auto"
+            allowScrollButtonsMobile
           >
             <Tab
               icon={<PeopleIcon fontSize="small" />}
@@ -284,7 +287,7 @@ const Users: React.FC = () => {
           </Tabs>
         </Box>
 
-        <Box sx={{ p: { xs: 1.5, sm: 2.5 } }}>
+        <Box sx={{ p: { xs: 1, sm: 2, md: 2.5 }, width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box", overflow: "hidden" }}>
           {activeTab === 0 && <CustomerList key={`cust_${refreshKey}`} onAddCustomerClick={() => handleOpenDrawer("CUSTOMER")} />}
           {activeTab === 1 && <SupplierList key={`sup_${refreshKey}`} onAddSupplierClick={() => handleOpenDrawer("SUPPLIER")} />}
           {activeTab === 2 && <EmployeeList key={`emp_${refreshKey}`} onAddEmployeeClick={() => handleOpenDrawer("EMPLOYEE")} />}

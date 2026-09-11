@@ -8,11 +8,9 @@ import {
   Divider,
   List,
   ListItem,
-  ListItemText,
   Chip,
   Alert,
   CircularProgress,
-  Tooltip,
 } from "@mui/material";
 import {
   Close as CloseIcon,
@@ -22,7 +20,6 @@ import {
   WarningAmber,
   DeleteOutline,
   Refresh,
-  CloudOff,
   CloudDone,
 } from "@mui/icons-material";
 import { OutboxOperation, OutboxStatus } from "../../../../domain/models/OutboxOperation";
@@ -127,7 +124,7 @@ export const OutboxDrawer: React.FC<OutboxDrawerProps> = ({ open, onClose, tenan
 
   return (
     <Drawer anchor="right" open={open} onClose={onClose}>
-      <Box sx={{ width: { xs: "100vw", sm: 460 }, p: 3, display: "flex", flexDirection: "column", height: "100%" }}>
+      <Box sx={{ width: { xs: "100vw", sm: 460 }, maxWidth: "100%", p: { xs: 2, sm: 3 }, boxSizing: "border-box", display: "flex", flexDirection: "column", height: "100%" }}>
         {/* Header */}
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
           <Typography variant="h6" sx={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: 1 }}>

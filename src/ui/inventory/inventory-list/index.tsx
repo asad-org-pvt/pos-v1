@@ -165,17 +165,17 @@ const InventoryList: React.FC<ComponentProps> = (props) => {
   }, [filteredProducts, classes, formatCurrency, organizationSettings.lowStockThreshold]);
 
   return (
-    <>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, gap: 2, flexWrap: "wrap" }}>
-        <Box sx={{ display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap" }}>
+    <Box sx={{ width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box", overflow: "hidden", p: { xs: 1, sm: 2 } }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, gap: 2, flexWrap: "wrap", width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
+        <Box sx={{ display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap", flex: 1, minWidth: 0 }}>
           <TextField
             size="small"
             placeholder="Search by Name, Barcode, SKU..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ width: 260 }}
+            sx={{ width: { xs: "100%", sm: 260 } }}
           />
-          <FormControl size="small" sx={{ width: 170 }}>
+          <FormControl size="small" sx={{ width: { xs: "100%", sm: 170 } }}>
             <InputLabel>Stock Level</InputLabel>
             <Select
               value={filterStatus}
@@ -190,16 +190,17 @@ const InventoryList: React.FC<ComponentProps> = (props) => {
           </FormControl>
         </Box>
 
-        <Box sx={{ display: "flex", gap: 1 }}>
+        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", width: { xs: "100%", sm: "auto" } }}>
           <Button
             variant="contained"
             color="primary"
             startIcon={<UploadFile />}
             onClick={() => setShowBulkImportModal(true)}
+            sx={{ flex: { xs: 1, sm: "none" } }}
           >
             Import Products CSV
           </Button>
-          <Button variant="outlined" startIcon={<Refresh />} onClick={loadProducts} disabled={isLoading}>
+          <Button variant="outlined" startIcon={<Refresh />} onClick={loadProducts} disabled={isLoading} sx={{ flex: { xs: 1, sm: "none" } }}>
             Refresh
           </Button>
         </Box>
@@ -239,7 +240,7 @@ const InventoryList: React.FC<ComponentProps> = (props) => {
           setShowBulkImportModal(false);
         }}
       />
-    </>
+    </Box>
   );
 };
 

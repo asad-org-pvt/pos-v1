@@ -24,6 +24,14 @@ export const useStylesFromThemeFunction = createUseStyles(
         boxSizing: "border-box",
         padding: "6px",
         gap: "6px",
+        "@media (max-width: 899px)": {
+          flexDirection: "column",
+          height: "auto",
+          maxHeight: "none",
+          overflow: "visible",
+          padding: "4px",
+          gap: "4px",
+        },
       },
       innerContainerLeft: {
         flex: "1 1 60%",
@@ -41,6 +49,16 @@ export const useStylesFromThemeFunction = createUseStyles(
         gap: "8px",
         overflowY: "auto",
         boxSizing: "border-box",
+        "@media (max-width: 899px)": {
+          minWidth: "0",
+          width: "100%",
+          height: "auto",
+          maxHeight: "none",
+          padding: "8px",
+          borderRadius: "8px",
+          gap: "6px",
+          flex: "none",
+        },
       },
       innerContainerRight: {
         flex: "0 0 390px",
@@ -55,9 +73,18 @@ export const useStylesFromThemeFunction = createUseStyles(
         padding: "0",
         borderRadius: "10px",
         boxSizing: "border-box",
+        "@media (max-width: 899px)": {
+          flex: "none",
+          width: "100%",
+          maxWidth: "100%",
+          height: "auto",
+          maxHeight: "none",
+          borderRadius: "8px",
+        },
       },
       productSearchContainer: {
         width: "100%",
+        boxSizing: "border-box",
         position: "relative",
         top: 0,
         left: 0,
@@ -66,10 +93,14 @@ export const useStylesFromThemeFunction = createUseStyles(
         alignItems: "center",
         justifyContent: "space-between",
         padding: "5px",
-        margin: "5px",
+        margin: "5px 0",
         borderRadius: "5px",
         backgroundColor: "var(--bg-paper, #ffffff)",
         border: "1px solid var(--border-color, rgba(0,0,0,0.06))",
+        "@media (max-width: 599px)": {
+          margin: "2px 0",
+          padding: "4px",
+        },
       },
       productSuggestionContainer: {
         width: "100%",
@@ -85,6 +116,10 @@ export const useStylesFromThemeFunction = createUseStyles(
         border: "1px solid var(--border-color, rgba(0,0,0,0.06))",
         overflowY: "auto",
         boxSizing: "border-box",
+        "@media (max-width: 899px)": {
+          minHeight: "120px",
+          padding: "4px",
+        },
       },
       addedProductsContainer: {
         width: "100%",
@@ -112,6 +147,11 @@ export const useStylesFromThemeFunction = createUseStyles(
         alignItems: "flex-end",
         justifyContent: "flex-end",
         width: "100%",
+        "@media (max-width: 599px)": {
+          flexDirection: "column",
+          alignItems: "stretch",
+          gap: "6px",
+        },
       },
       column: {
         display: "flex",
@@ -155,6 +195,43 @@ export const useStylesFromThemeFunction = createUseStyles(
         alignItems: "center",
         justifyContent: "flex-start",
         width: "100%",
+      },
+
+      /* ============================================================
+         Mobile POS Tab Switcher
+         ============================================================ */
+      mobileTabBar: {
+        display: "none",
+        "@media (max-width: 899px)": {
+          display: "flex",
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
+          backgroundColor: "var(--bg-paper, #ffffff)",
+          borderBottom: "1px solid var(--border-color, rgba(0,0,0,0.08))",
+          borderRadius: "8px 8px 0 0",
+        },
+      },
+      mobileTabButton: {
+        flex: 1,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "6px",
+        padding: "10px 8px",
+        fontSize: "14px",
+        fontWeight: 600,
+        cursor: "pointer",
+        border: "none",
+        backgroundColor: "transparent",
+        color: "var(--text-secondary, #64748b)",
+        borderBottom: "2px solid transparent",
+        transition: "all 0.2s ease",
+      },
+      mobileTabButtonActive: {
+        color: "var(--primary-color, #0d6efd)",
+        borderBottomColor: "var(--primary-color, #0d6efd)",
+        backgroundColor: "var(--bg-surface, #f1f5f9)",
       },
     };
   }
