@@ -191,7 +191,7 @@ const OrganisationList: React.FC<ComponentProps> = (props) => {
             placeholder="Search organizations by name, email, or city..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ minWidth: 320 }}
+            sx={{ minWidth: { xs: "100%", sm: 320 }, flex: { xs: 1, sm: "none" } }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">

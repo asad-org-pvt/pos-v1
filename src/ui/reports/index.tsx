@@ -103,10 +103,10 @@ export const ReportsView: React.FC = () => {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: { xs: 1.5, sm: 2, md: 3 }, width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box", overflowX: "hidden" }}>
       {/* Date Filter & Export Header */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3, flexWrap: "wrap", gap: 2 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3, flexWrap: "wrap", gap: 2, flexDirection: { xs: "column", md: "row" }, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
+        <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2, flexWrap: "wrap", flexDirection: { xs: "column", sm: "row" }, width: { xs: "100%", md: "auto" } }}>
           <Typography variant="h6" sx={{ fontWeight: "bold" }}>
             Management Reports & Analytics
           </Typography>
@@ -118,34 +118,35 @@ export const ReportsView: React.FC = () => {
             onChange={(_, val) => {
               if (val) setDatePreset(val);
             }}
+            sx={{ flexWrap: "wrap" }}
           >
             <ToggleButton value="today">Today</ToggleButton>
             <ToggleButton value="yesterday">Yesterday</ToggleButton>
-            <ToggleButton value="last7days">Last 7 Days</ToggleButton>
-            <ToggleButton value="last30days">Last 30 Days</ToggleButton>
-            <ToggleButton value="all">All Time</ToggleButton>
+            <ToggleButton value="last7days">7 Days</ToggleButton>
+            <ToggleButton value="last30days">30 Days</ToggleButton>
+            <ToggleButton value="all">All</ToggleButton>
           </ToggleButtonGroup>
           <Button variant="outlined" size="small" startIcon={<Refresh />} onClick={loadReports} disabled={isLoading}>
             Refresh
           </Button>
         </Box>
 
-        <Box sx={{ display: "flex", gap: 1 }}>
-          <Button variant="outlined" size="small" startIcon={<FileDownload />} onClick={handleExportSalesCsv}>
-            Export Sales
+        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", width: { xs: "100%", md: "auto" } }}>
+          <Button variant="outlined" size="small" startIcon={<FileDownload />} onClick={handleExportSalesCsv} sx={{ flex: { xs: 1, md: "none" }, fontSize: { xs: "11px", sm: "13px" } }}>
+            Sales
           </Button>
-          <Button variant="outlined" size="small" startIcon={<FileDownload />} onClick={handleExportInventoryCsv}>
-            Export Inventory
+          <Button variant="outlined" size="small" startIcon={<FileDownload />} onClick={handleExportInventoryCsv} sx={{ flex: { xs: 1, md: "none" }, fontSize: { xs: "11px", sm: "13px" } }}>
+            Inventory
           </Button>
-          <Button variant="outlined" size="small" startIcon={<FileDownload />} onClick={handleExportMovementsCsv}>
-            Export Movements
+          <Button variant="outlined" size="small" startIcon={<FileDownload />} onClick={handleExportMovementsCsv} sx={{ flex: { xs: 1, md: "none" }, fontSize: { xs: "11px", sm: "13px" } }}>
+            Movements
           </Button>
         </Box>
       </Box>
 
       {/* KPI Cards Grid */}
       {salesSummary && (
-        <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid container spacing={{ xs: 1.5, sm: 2 }} sx={{ mb: 3 }}>
           <Grid item xs={12} sm={6} md={3}>
             <Paper sx={{ p: 2, display: "flex", alignItems: "center", gap: 2, bgcolor: "info.light" }}>
               <AttachMoney color="primary" sx={{ fontSize: 40 }} />
@@ -218,7 +219,7 @@ export const ReportsView: React.FC = () => {
 
       {/* Payment Methods Breakdown */}
       {salesSummary && (
-        <Paper sx={{ p: 2, mb: 3 }}>
+        <Paper sx={{ p: 2, mb: 3, width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box" }}>
           <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 1 }}>
             PAYMENT TENDER BREAKDOWN
           </Typography>
@@ -239,10 +240,10 @@ export const ReportsView: React.FC = () => {
         </Paper>
       )}
 
-      <Grid container spacing={3}>
+      <Grid container spacing={{ xs: 2, md: 3 }}>
         {/* Top Products */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2 }}>
+        <Grid item xs={12} md={6} sx={{ minWidth: 0, width: "100%" }}>
+          <Paper sx={{ p: { xs: 1.5, sm: 2 }, width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box", overflow: "hidden" }}>
             <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 1 }}>
               Top Selling Products
             </Typography>
@@ -266,8 +267,8 @@ export const ReportsView: React.FC = () => {
         </Grid>
 
         {/* Cashier Performance */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2 }}>
+        <Grid item xs={12} md={6} sx={{ minWidth: 0, width: "100%" }}>
+          <Paper sx={{ p: { xs: 1.5, sm: 2 }, width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box", overflow: "hidden" }}>
             <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 1 }}>
               Cashier Sales Performance
             </Typography>

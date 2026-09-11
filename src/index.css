@@ -7,9 +7,114 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  /* Use dvh for mobile browsers that hide/show the address bar */
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* ===================================================================
+   Responsive CSS Custom Properties
+   =================================================================== */
+:root {
+  --page-px: 24px;
+  --page-py: 24px;
+  --card-padding: 16px;
+  --section-gap: 24px;
+  --min-touch-target: 44px;
+}
+
+@media (max-width: 899px) {
+  :root {
+    --page-px: 12px;
+    --page-py: 12px;
+    --card-padding: 12px;
+    --section-gap: 16px;
+  }
+}
+
+@media (max-width: 599px) {
+  :root {
+    --page-px: 8px;
+    --page-py: 8px;
+    --card-padding: 10px;
+    --section-gap: 12px;
+  }
+}
+
+/* ===================================================================
+   Global Responsive Utilities
+   =================================================================== */
+
+/* Prevent tables from breaking layout */
+table {
+  max-width: 100%;
+}
+
+/* Ensure images never overflow */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive horizontal scroll wrapper (used by Table component) */
+.responsive-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Scroll shadow indicators for horizontally scrollable areas */
+.responsive-table-wrapper::after {
+  content: '';
+  position: sticky;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  pointer-events: none;
+}
+
+/* On mobile, allow touch-friendly scrolling */
+@media (max-width: 899px) {
+  .MuiToggleButtonGroup-root {
+    flex-wrap: wrap;
+  }
+
+  /* Make Bootstrap modal nearly full-screen on mobile */
+  .modal-dialog {
+    margin: 8px !important;
+    max-width: calc(100% - 16px) !important;
+  }
+
+  /* Allow scrolling for horizontal tab bars */
+  .nav-tabs,
+  .nav-pills {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .nav-tabs::-webkit-scrollbar,
+  .nav-pills::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (max-width: 599px) {
+  /* Full-screen Bootstrap modals on phones */
+  .modal-dialog {
+    margin: 4px !important;
+    max-width: calc(100% - 8px) !important;
+  }
+
+  .modal-content {
+    border-radius: 8px !important;
+  }
 }

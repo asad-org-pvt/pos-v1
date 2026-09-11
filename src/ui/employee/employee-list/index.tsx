@@ -130,25 +130,28 @@ const EmployeeList: React.FC<ComponentProps> = (props) => {
   }, [filteredEmployees, page, rowsPerPage]);
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box" }}>
       {/* SEARCH AND FILTERS BAR */}
       <Paper
         elevation={0}
         sx={{
-          p: 2,
+          p: { xs: 1.5, sm: 2 },
           mb: 2,
           display: "flex",
           flexWrap: "wrap",
-          gap: 2,
+          gap: 1.5,
           alignItems: "center",
           justifyContent: "space-between",
           border: "1px solid",
           borderColor: "divider",
           borderRadius: 2,
           bgcolor: "background.paper",
+          width: "100%",
+          maxWidth: "100%",
+          boxSizing: "border-box",
         }}
       >
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, alignItems: "center", flex: 1, minWidth: 280 }}>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, alignItems: "center", flex: 1, minWidth: 0 }}>
           <TextField
             size="small"
             placeholder="Search staff by name, email, phone, role..."
@@ -167,7 +170,7 @@ const EmployeeList: React.FC<ComponentProps> = (props) => {
             sx={{ minWidth: { xs: "100%", sm: 260 }, flex: 1 }}
           />
 
-          <FormControl size="small" sx={{ minWidth: 150 }}>
+          <FormControl size="small" sx={{ minWidth: { xs: "calc(50% - 6px)", sm: 150 }, flex: { xs: 1, sm: "none" } }}>
             <InputLabel id="dept-filter-label">Department</InputLabel>
             <Select
               labelId="dept-filter-label"
@@ -188,7 +191,7 @@ const EmployeeList: React.FC<ComponentProps> = (props) => {
             </Select>
           </FormControl>
 
-          <FormControl size="small" sx={{ minWidth: 130 }}>
+          <FormControl size="small" sx={{ minWidth: { xs: "calc(50% - 6px)", sm: 130 }, flex: { xs: 1, sm: "none" } }}>
             <InputLabel id="status-filter-label">Status</InputLabel>
             <Select
               labelId="status-filter-label"
@@ -219,9 +222,19 @@ const EmployeeList: React.FC<ComponentProps> = (props) => {
       <TableContainer
         component={Paper}
         elevation={0}
-        sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2, bgcolor: "background.paper" }}
+        sx={{
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: 2,
+          bgcolor: "background.paper",
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          overflowX: "auto",
+          boxSizing: "border-box",
+        }}
       >
-        <Table size="medium">
+        <Table size="medium" sx={{ minWidth: 650 }}>
           <TableHead sx={{ bgcolor: "action.hover" }}>
             <TableRow>
               <TableCell sx={{ fontWeight: "bold" }}>Staff Member</TableCell>
@@ -340,7 +353,7 @@ const EmployeeList: React.FC<ComponentProps> = (props) => {
                     </TableCell>
 
                     <TableCell align="right">
-                      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
+                      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 0.5, flexWrap: "nowrap" }}>
                         <Tooltip title="Edit Staff Member">
                           <IconButton
                             size="small"
@@ -382,6 +395,19 @@ const EmployeeList: React.FC<ComponentProps> = (props) => {
           onRowsPerPageChange={(e) => {
             setRowsPerPage(parseInt(e.target.value, 10));
             setPage(0);
+          }}
+          sx={{
+            borderTop: "1px solid",
+            borderColor: "divider",
+            ".MuiTablePagination-toolbar": {
+              flexWrap: "wrap",
+              justifyContent: { xs: "center", sm: "flex-end" },
+              px: 1,
+              minHeight: 52,
+            },
+            ".MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows": {
+              fontSize: { xs: "0.75rem", sm: "0.875rem" },
+            },
           }}
         />
       </TableContainer>

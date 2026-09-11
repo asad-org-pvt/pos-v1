@@ -47,9 +47,9 @@ export const ProfileSettings: React.FC = () => {
   };
 
   return (
-    <Card sx={{ maxWidth: 800, m: "0 auto", borderRadius: 2, boxShadow: 2 }}>
-      <CardContent>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+    <Card sx={{ width: "100%", maxWidth: 800, m: "0 auto", borderRadius: 2, boxShadow: 2, boxSizing: "border-box", overflow: "hidden" }}>
+      <CardContent sx={{ p: { xs: 1.5, sm: 3 } }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, flexWrap: "wrap", gap: 1.5 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
             <Avatar sx={{ bgcolor: "primary.main", width: 48, height: 48 }}>
               {user?.displayName ? user.displayName.charAt(0).toUpperCase() : "U"}
@@ -75,7 +75,7 @@ export const ProfileSettings: React.FC = () => {
 
         <Divider sx={{ mb: 3 }} />
 
-        <Grid container spacing={3}>
+        <Grid container spacing={{ xs: 2, sm: 3 }}>
           {/* User Information */}
           <Grid item xs={12}>
             <Typography variant="subtitle1" fontWeight="700" sx={{ display: "flex", alignItems: "center", gap: 1, color: "primary.main" }}>
@@ -135,12 +135,13 @@ export const ProfileSettings: React.FC = () => {
           </Grid>
 
           <Grid item xs={12}>
-            <Box sx={{ display: "flex", gap: 2, alignItems: "center", flexWrap: "wrap" }}>
+            <Box sx={{ display: "flex", gap: 1.5, alignItems: "center", flexWrap: "wrap" }}>
               <Button
                 variant="outlined"
                 color="primary"
                 startIcon={<LockReset />}
                 onClick={handlePasswordReset}
+                sx={{ width: { xs: "100%", sm: "auto" } }}
               >
                 Send Password Reset Email
               </Button>
@@ -150,6 +151,7 @@ export const ProfileSettings: React.FC = () => {
                 color="error"
                 startIcon={<Logout />}
                 onClick={handleSignout}
+                sx={{ width: { xs: "100%", sm: "auto" } }}
               >
                 Sign Out
               </Button>

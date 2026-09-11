@@ -91,6 +91,10 @@ export const useStylesFromThemeFunction = createUseStyles(
         alignItems: "flex-end",
         justifyContent: "flex-end",
         width: "100%",
+        "@media (max-width: 599px)": {
+          flexDirection: "column",
+          alignItems: "stretch",
+        },
       },
       column: {
         display: "flex",
@@ -98,6 +102,9 @@ export const useStylesFromThemeFunction = createUseStyles(
         alignItems: "flex-start",
         justifyContent: "flex-start",
         width: "100%",
+        "@media (max-width: 599px)": {
+          margin: "4px 0",
+        },
       },
       equallyDistantRow: {
         display: "flex",

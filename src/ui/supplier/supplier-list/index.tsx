@@ -117,22 +117,25 @@ const SupplierList: React.FC<ComponentProps> = (props) => {
   }, [filteredSuppliers, page, rowsPerPage]);
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box" }}>
       {/* SEARCH BAR */}
       <Paper
         elevation={0}
         sx={{
-          p: 2,
+          p: { xs: 1.5, sm: 2 },
           mb: 2,
           display: "flex",
           flexWrap: "wrap",
-          gap: 2,
+          gap: 1.5,
           alignItems: "center",
           justifyContent: "space-between",
           border: "1px solid",
           borderColor: "divider",
           borderRadius: 2,
           bgcolor: "background.paper",
+          width: "100%",
+          maxWidth: "100%",
+          boxSizing: "border-box",
         }}
       >
         <TextField
@@ -150,7 +153,7 @@ const SupplierList: React.FC<ComponentProps> = (props) => {
               </InputAdornment>
             ),
           }}
-          sx={{ minWidth: { xs: "100%", sm: 340 }, flex: 1 }}
+          sx={{ minWidth: { xs: "100%", sm: 280 }, flex: 1 }}
         />
 
         <Box sx={{ display: "flex", gap: 1 }}>
@@ -166,9 +169,19 @@ const SupplierList: React.FC<ComponentProps> = (props) => {
       <TableContainer
         component={Paper}
         elevation={0}
-        sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2, bgcolor: "background.paper" }}
+        sx={{
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: 2,
+          bgcolor: "background.paper",
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          overflowX: "auto",
+          boxSizing: "border-box",
+        }}
       >
-        <Table size="medium">
+        <Table size="medium" sx={{ minWidth: 650 }}>
           <TableHead sx={{ bgcolor: "action.hover" }}>
             <TableRow>
               <TableCell sx={{ fontWeight: "bold" }}>Vendor / Company</TableCell>
@@ -279,7 +292,7 @@ const SupplierList: React.FC<ComponentProps> = (props) => {
                     </TableCell>
 
                     <TableCell align="right">
-                      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
+                      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 0.5, flexWrap: "nowrap" }}>
                         <Tooltip title="Edit Supplier">
                           <IconButton
                             size="small"
@@ -321,6 +334,19 @@ const SupplierList: React.FC<ComponentProps> = (props) => {
           onRowsPerPageChange={(e) => {
             setRowsPerPage(parseInt(e.target.value, 10));
             setPage(0);
+          }}
+          sx={{
+            borderTop: "1px solid",
+            borderColor: "divider",
+            ".MuiTablePagination-toolbar": {
+              flexWrap: "wrap",
+              justifyContent: { xs: "center", sm: "flex-end" },
+              px: 1,
+              minHeight: 52,
+            },
+            ".MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows": {
+              fontSize: { xs: "0.75rem", sm: "0.875rem" },
+            },
           }}
         />
       </TableContainer>

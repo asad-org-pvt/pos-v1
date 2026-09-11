@@ -1,20 +1,20 @@
-import React, { useState } from "react";
-import { Tab, Tabs } from "react-bootstrap";
+import React from "react";
 import { ComponentProps } from "./Orders";
 // import "boxicons";
 import OrderList from "./order-list";
 import ListLayout from "../app-layout/list-layout";
 
-const Order: React.FC<ComponentProps> = () => {
-  const [closeDrawer, setCloseDrawer] = useState(false);
+import { Box } from "@mui/material";
 
+const Order: React.FC<ComponentProps> = () => {
   return (
-    <ListLayout
-      title="orders"
-      // drawerComponent={<AddNewInventory onSubmit={onAddProduct} />}
-      listComponent={<OrderList />}
-      closeDrawer={closeDrawer}
-    />
+    <Box sx={{ width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box", overflowX: "hidden" }}>
+      <ListLayout
+        title="orders"
+        listComponent={<OrderList />}
+        closeDrawer={false}
+      />
+    </Box>
   );
 };
 

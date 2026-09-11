@@ -59,8 +59,8 @@ export const AppearanceSettings: React.FC = () => {
   };
 
   return (
-    <Card sx={{ maxWidth: 800, m: "0 auto", borderRadius: 2, boxShadow: 2 }}>
-      <CardContent>
+    <Card sx={{ width: "100%", maxWidth: 800, m: "0 auto", borderRadius: 2, boxShadow: 2, boxSizing: "border-box", overflow: "hidden" }}>
+      <CardContent sx={{ p: { xs: 1.5, sm: 3 } }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
           <Palette color="primary" />
           <Typography variant="h6" fontWeight="bold">
@@ -71,10 +71,10 @@ export const AppearanceSettings: React.FC = () => {
         <Divider sx={{ mb: 3 }} />
 
         <form onSubmit={handleSave}>
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
             {/* 1. THEME MODE */}
             <Grid item xs={12}>
-              <FormControl component="fieldset">
+              <FormControl component="fieldset" fullWidth>
                 <FormLabel component="legend" sx={{ fontWeight: "700", mb: 1.5, color: "text.primary" }}>
                   Interface Theme
                 </FormLabel>
@@ -82,12 +82,13 @@ export const AppearanceSettings: React.FC = () => {
                   row
                   value={formData.themeMode}
                   onChange={(e) => setFormData({ ...formData, themeMode: e.target.value as any })}
+                  sx={{ gap: 1.5, flexWrap: "wrap" }}
                 >
                   <Paper
                     variant="outlined"
                     sx={{
+                      flex: { xs: "1 1 100%", sm: "1 1 auto" },
                       p: 1.5,
-                      mr: 2,
                       display: "flex",
                       alignItems: "center",
                       borderRadius: 2,
@@ -109,8 +110,8 @@ export const AppearanceSettings: React.FC = () => {
                   <Paper
                     variant="outlined"
                     sx={{
+                      flex: { xs: "1 1 100%", sm: "1 1 auto" },
                       p: 1.5,
-                      mr: 2,
                       display: "flex",
                       alignItems: "center",
                       borderRadius: 2,
@@ -132,6 +133,7 @@ export const AppearanceSettings: React.FC = () => {
                   <Paper
                     variant="outlined"
                     sx={{
+                      flex: { xs: "1 1 100%", sm: "1 1 auto" },
                       p: 1.5,
                       display: "flex",
                       alignItems: "center",
@@ -160,7 +162,7 @@ export const AppearanceSettings: React.FC = () => {
               <FormLabel component="legend" sx={{ fontWeight: "700", mb: 1.5, color: "text.primary" }}>
                 Brand Accent Color
               </FormLabel>
-              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+              <Box sx={{ display: "flex", gap: { xs: 1, sm: 2 }, flexWrap: "wrap" }}>
                 {ACCENT_COLORS.map((accent) => (
                   <Box
                     key={accent.hex}
@@ -170,8 +172,10 @@ export const AppearanceSettings: React.FC = () => {
                       alignItems: "center",
                       gap: 1,
                       p: 1,
-                      px: 2,
+                      px: { xs: 1.5, sm: 2 },
                       borderRadius: 2,
+                      flex: { xs: "1 1 calc(50% - 8px)", sm: "0 0 auto" },
+                      boxSizing: "border-box",
                       border: "2px solid",
                       borderColor: formData.accentColor === accent.hex ? accent.hex : "divider",
                       cursor: "pointer",
@@ -253,6 +257,7 @@ export const AppearanceSettings: React.FC = () => {
                   color="primary"
                   startIcon={<SaveIcon />}
                   disabled={saving}
+                  sx={{ width: { xs: "100%", sm: "auto" } }}
                 >
                   {saving ? "Saving..." : "Save Appearance"}
                 </Button>

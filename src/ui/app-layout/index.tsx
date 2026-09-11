@@ -15,18 +15,55 @@ import Signup from "../auth/signup";
 import VerifyEmail from "../auth/verify-email";
 import { LOGIN_PATH } from "../common/constants";
 import Organisation from "../organisation";
-import { Box, CircularProgress } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Drawer as MuiDrawer,
+  BottomNavigation,
+  BottomNavigationAction,
+  Divider,
+} from "@mui/material";
+import {
+  Menu as MenuIcon,
+  Close as CloseIcon,
+  PointOfSale,
+  Inventory2,
+  Receipt,
+  Settings,
+  LocalShipping,
+  BarChart,
+  Group,
+  Business,
+} from "@mui/icons-material";
 import { useAuthTenant } from "../../context/AuthTenantContext";
-
-const windowHeight = typeof window !== "undefined" ? window.innerHeight : 800;
+import { useResponsive } from "../../hooks/useResponsive";
 
 const AUTH_PATHS = ["/login", "/signup", "/reset-password", "/verify-email"];
+
+// Navigation items config
+const NAV_ITEMS = [
+  { key: "pos", label: "POS", icon: <PointOfSale />, path: "/organization/pos" },
+  { key: "inventory", label: "Inventory", icon: <Inventory2 />, path: "/organization/inventory" },
+  { key: "orders", label: "Orders", icon: <Receipt />, path: "/organization/orders" },
+  { key: "purchasing", label: "Purchasing", icon: <LocalShipping />, path: "/organization/purchasing" },
+  { key: "reports", label: "Reports", icon: <BarChart />, path: "/organization/reports" },
+  { key: "users", label: "Users", icon: <Group />, path: "/organization/users" },
+  { key: "settings", label: "Settings", icon: <Settings />, path: "/organization/settings" },
+];
+
+const BOTTOM_NAV_KEYS = ["pos", "inventory", "orders", "settings"];
 
 const AppLayout: React.FC<ComponentProps> = () => {
   const classes = useStylesFromThemeFunction();
   const navigate = useNavigate();
   const location = useLocation();
   const [showSidebar, setShowSidebar] = useState(true);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const { isCompact } = useResponsive();
 
   const { isAuthenticated, isAdmin, isLoading } = useAuthTenant();
 
@@ -46,7 +83,18 @@ const AppLayout: React.FC<ComponentProps> = () => {
   const handleTabClick = (e: React.MouseEvent, url: string) => {
     e.preventDefault();
     navigate(url);
+    setMobileDrawerOpen(false);
   };
+
+  const handleBottomNavChange = (_: React.SyntheticEvent, newValue: string) => {
+    const item = NAV_ITEMS.find((n) => n.key === newValue);
+    if (item) navigate(item.path);
+  };
+
+  // Determine active nav key from current path
+  const activeNavKey =
+    NAV_ITEMS.find((n) => location.pathname === n.path)?.key ||
+    (location.pathname === "/admin/organization" ? "organization" : "pos");
 
   if (isLoading) {
     return (
@@ -66,9 +114,99 @@ const AppLayout: React.FC<ComponentProps> = () => {
 
   return (
     <>
+      {/* ================================================================
+          MOBILE: Top App Bar with hamburger menu
+          ================================================================ */}
+      {isCompact && isAuthenticated && (
+        <AppBar
+          position="fixed"
+          elevation={1}
+          sx={{
+            bgcolor: "background.paper",
+            color: "text.primary",
+            borderBottom: "1px solid",
+            borderColor: "divider",
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+          }}
+        >
+          <Toolbar variant="dense" sx={{ minHeight: 56 }}>
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={() => setMobileDrawerOpen(true)}
+              sx={{ mr: 1 }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, flexGrow: 1 }}>
+              {NAV_ITEMS.find((n) => n.key === activeNavKey)?.label || "POS"}
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      {/* ================================================================
+          MOBILE: Slide-out navigation drawer
+          ================================================================ */}
+      {isCompact && isAuthenticated && (
+        <MuiDrawer
+          anchor="left"
+          open={mobileDrawerOpen}
+          onClose={() => setMobileDrawerOpen(false)}
+          sx={{
+            "& .MuiDrawer-paper": {
+              width: 280,
+              bgcolor: "background.paper",
+              color: "text.primary",
+            },
+          }}
+        >
+          <Box className={classes.mobileDrawerHeader}>
+            <Typography variant="h6" sx={{ fontWeight: 700 }}>
+              Navigation
+            </Typography>
+            <IconButton onClick={() => setMobileDrawerOpen(false)} size="small">
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <Divider />
+          <Box className={classes.mobileDrawerList}>
+            {NAV_ITEMS.map((item) => (
+              <Box
+                key={item.key}
+                className={`${classes.mobileDrawerItem} ${
+                  activeNavKey === item.key ? classes.mobileDrawerItemActive : ""
+                }`}
+                onClick={(e) => handleTabClick(e, item.path)}
+              >
+                {item.icon}
+                {item.label}
+              </Box>
+            ))}
+            {isAdmin && (
+              <>
+                <Divider sx={{ my: 1 }} />
+                <Box
+                  className={`${classes.mobileDrawerItem} ${
+                    activeNavKey === "organization" ? classes.mobileDrawerItemActive : ""
+                  }`}
+                  onClick={(e) => handleTabClick(e, "/admin/organization")}
+                >
+                  <Business />
+                  Organization
+                </Box>
+              </>
+            )}
+          </Box>
+        </MuiDrawer>
+      )}
+
+      {/* ================================================================
+          DESKTOP: Original fixed sidebar
+          ================================================================ */}
       <Tab.Container defaultActiveKey="pos">
-        <Row>
-          {isAuthenticated && (
+        <Row className="g-0 m-0 w-100">
+          {isAuthenticated && !isCompact && (
             <Col sm={3}>
               <Box
                 className={`${
@@ -78,7 +216,6 @@ const AppLayout: React.FC<ComponentProps> = () => {
                     ? classes.tabs
                     : classes.tabsOnAuth
                 }`}
-                style={{ height: windowHeight - 50 }}
               >
                 <Box className={classes.tabsStyle}>
                   <Collapse in={showSidebar}>
@@ -193,10 +330,10 @@ const AppLayout: React.FC<ComponentProps> = () => {
               </Box>
             </Col>
           )}
-          <Col sm={12}>
+          <Col xs={12} className="p-0" style={{ minWidth: 0, maxWidth: "100%", width: "100%" }}>
             <Box
               className={`${
-                showSidebar && isAuthenticated
+                showSidebar && isAuthenticated && !isCompact
                   ? classes.contentPanWithSidebar
                   : isAuthenticated
                   ? classes.contentPan
@@ -236,6 +373,48 @@ const AppLayout: React.FC<ComponentProps> = () => {
           </Col>
         </Row>
       </Tab.Container>
+
+      {/* ================================================================
+          MOBILE: Bottom Navigation Bar
+          ================================================================ */}
+      {isCompact && isAuthenticated && (
+        <BottomNavigation
+          value={BOTTOM_NAV_KEYS.includes(activeNavKey) ? activeNavKey : "pos"}
+          onChange={handleBottomNavChange}
+          showLabels
+          sx={{
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+            borderTop: "1px solid",
+            borderColor: "divider",
+            bgcolor: "background.paper",
+            height: 60,
+            "& .MuiBottomNavigationAction-root": {
+              minWidth: 0,
+              py: 0.5,
+              "&.Mui-selected": {
+                color: "primary.main",
+              },
+            },
+            "& .MuiBottomNavigationAction-label": {
+              fontSize: "11px",
+              fontWeight: 600,
+            },
+          }}
+        >
+          {NAV_ITEMS.filter((n) => BOTTOM_NAV_KEYS.includes(n.key)).map((item) => (
+            <BottomNavigationAction
+              key={item.key}
+              label={item.label}
+              value={item.key}
+              icon={item.icon}
+            />
+          ))}
+        </BottomNavigation>
+      )}
     </>
   );
 };

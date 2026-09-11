@@ -77,8 +77,8 @@ export const SystemPreferences: React.FC = () => {
   };
 
   return (
-    <Card sx={{ maxWidth: 800, m: "0 auto", borderRadius: 2, boxShadow: 2 }}>
-      <CardContent>
+    <Card sx={{ width: "100%", maxWidth: 800, m: "0 auto", borderRadius: 2, boxShadow: 2, boxSizing: "border-box", overflow: "hidden" }}>
+      <CardContent sx={{ p: { xs: 1.5, sm: 3 } }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
           <Computer color="primary" />
           <Typography variant="h6" fontWeight="bold">
@@ -89,7 +89,7 @@ export const SystemPreferences: React.FC = () => {
         <Divider sx={{ mb: 3 }} />
 
         <form onSubmit={handleSave}>
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
             {/* 1. LOCALIZATION */}
             <Grid item xs={12}>
               <Typography variant="subtitle1" fontWeight="700" sx={{ display: "flex", alignItems: "center", gap: 1, color: "primary.main" }}>
@@ -177,12 +177,13 @@ export const SystemPreferences: React.FC = () => {
             )}
 
             <Grid item xs={12}>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 1.5 }}>
                 <Button
                   variant="outlined"
                   color="error"
                   startIcon={<DeleteForever />}
                   onClick={() => setConfirmDialogOpen(true)}
+                  sx={{ width: { xs: "100%", sm: "auto" } }}
                 >
                   Clear Local Cache
                 </Button>
@@ -192,6 +193,7 @@ export const SystemPreferences: React.FC = () => {
                   variant="contained"
                   color="primary"
                   startIcon={<SaveIcon />}
+                  sx={{ width: { xs: "100%", sm: "auto" } }}
                 >
                   Save System Preferences
                 </Button>
@@ -201,7 +203,7 @@ export const SystemPreferences: React.FC = () => {
         </form>
 
         {/* Confirmation Modal */}
-        <Dialog open={confirmDialogOpen} onClose={() => setConfirmDialogOpen(false)}>
+        <Dialog open={confirmDialogOpen} onClose={() => setConfirmDialogOpen(false)} fullWidth maxWidth="xs">
           <DialogTitle sx={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: 1 }}>
             <WarningAmber color="warning" /> Confirm Cache Clearing
           </DialogTitle>

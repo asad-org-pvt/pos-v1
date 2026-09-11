@@ -43,6 +43,10 @@ export const useStylesFromThemeFunction = createUseStyles((theme: ThemeInterface
         border: 'none',
         background: 'none',
       },
+      '@media (max-width: 768px)': {
+        height: 44,
+        fontSize: '16px',
+      },
     },
     inputDisabled: {
       opacity: 0.3,

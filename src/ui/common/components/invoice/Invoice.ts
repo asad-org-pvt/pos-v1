@@ -32,6 +32,13 @@ export const useStylesFromThemeFunction = createUseStyles(
         border: "1px solid var(--border-color, rgba(0, 0, 0, 0.08))",
         boxSizing: "border-box",
         overflow: "hidden",
+        "@media (max-width: 899px)": {
+          padding: "10px",
+          borderRadius: "8px",
+          gap: "6px",
+          height: "auto",
+          maxHeight: "none",
+        },
       },
       headerRow: {
         display: "flex",
@@ -125,6 +132,12 @@ export const useStylesFromThemeFunction = createUseStyles(
         gap: "8px",
         marginTop: "auto",
         paddingTop: "6px",
+        "@media (max-width: 599px)": {
+          gridTemplateColumns: "1fr 1fr",
+          "& > button:last-child": {
+            gridColumn: "1 / -1",
+          },
+        },
       },
     };
   }

@@ -60,6 +60,10 @@ export const useStyles = createUseStyles({
       height: "100%",
       backgroundColor: "var(--bg-paper, #ffffff)",
       color: "var(--text-primary, #0f172a)",
+      "@media (max-width: 599px)": {
+        width: "100%",
+        maxWidth: "100%",
+      },
     },
   },
   horizontal: {
@@ -123,6 +127,12 @@ export const useStyles = createUseStyles({
     padding: 40,
     backgroundColor: "var(--bg-paper, #ffffff)",
     color: "var(--text-primary, #0f172a)",
+    "@media (max-width: 899px)": {
+      padding: 20,
+    },
+    "@media (max-width: 599px)": {
+      padding: 16,
+    },
   },
   headSubTitle: {
     marginTop: 4,

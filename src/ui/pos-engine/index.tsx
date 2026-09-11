@@ -35,7 +35,8 @@ import { OutboxDrawer } from "../common/components/outbox-drawer";
 import PrintableReceipt, { PrintableShiftReport } from "../common/components/printable-invoice";
 import { Modal } from "react-bootstrap";
 import { Box, TextField, Button, Typography, Chip, Paper, InputAdornment } from "@mui/material";
-import { QrCodeScanner, PointOfSale, LockClock, CloudQueue } from "@mui/icons-material";
+import { QrCodeScanner, PointOfSale, LockClock, CloudQueue, ShoppingCart, Payment } from "@mui/icons-material";
+import { useResponsive } from "../../hooks/useResponsive";
 
 export const POSEngine: React.FC<ComponentProps> = ({ isLoading }) => {
   const { productList, loading } = useSelector(
@@ -83,6 +84,8 @@ export const POSEngine: React.FC<ComponentProps> = ({ isLoading }) => {
   const [closingNotes, setClosingNotes] = useState<string>("");
 
   const classes = useStylesFromThemeFunction();
+  const { isCompact } = useResponsive();
+  const [mobileActiveTab, setMobileActiveTab] = useState<"cart" | "checkout">("cart");
 
   const loadInvoiceNumber = async () => {
     try {
@@ -625,6 +628,25 @@ export const POSEngine: React.FC<ComponentProps> = ({ isLoading }) => {
 
   return (
     <div className={classes.container}>
+      {/* Mobile Tab Switcher */}
+      {isCompact && (
+        <div className={classes.mobileTabBar}>
+          <button
+            className={`${classes.mobileTabButton} ${mobileActiveTab === "cart" ? classes.mobileTabButtonActive : ""}`}
+            onClick={() => setMobileActiveTab("cart")}
+          >
+            <ShoppingCart fontSize="small" /> Cart ({addedProducts.length})
+          </button>
+          <button
+            className={`${classes.mobileTabButton} ${mobileActiveTab === "checkout" ? classes.mobileTabButtonActive : ""}`}
+            onClick={() => setMobileActiveTab("checkout")}
+          >
+            <Payment fontSize="small" /> Checkout
+          </button>
+        </div>
+      )}
+
+      {(!isCompact || mobileActiveTab === "cart") && (
       <div className={classes.innerContainerLeft}>
         {/* Register & Shift Banner */}
         <Paper
@@ -633,17 +655,20 @@ export const POSEngine: React.FC<ComponentProps> = ({ isLoading }) => {
             p: 1.5,
             mb: 2,
             display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            flexWrap: "wrap",
+            gap: 1.5,
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: { xs: "flex-start", sm: "center" },
             bgcolor: activeShift ? "success.light" : "warning.light",
             border: "1px solid",
             borderColor: activeShift ? "success.main" : "warning.main",
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <PointOfSale color={activeShift ? "success" : "warning"} />
+          <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}>
+            <PointOfSale color={activeShift ? "success" : "warning"} sx={{ mt: 0.5 }} />
             <Box>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
                   {activeShift ? `Shift Active: ${activeShift.registerName}` : "No Active Shift"}
                 </Typography>
@@ -666,7 +691,7 @@ export const POSEngine: React.FC<ComponentProps> = ({ isLoading }) => {
                   sx={{ height: "20px", fontSize: "10px", fontWeight: "bold" }}
                 />
               </Box>
-              <Typography variant="caption" color="textSecondary">
+              <Typography variant="caption" color="textSecondary" sx={{ display: "block", mt: 0.25 }}>
                 {activeShift
                   ? `Cashier: ${activeShift.cashierName} | Drawer Cash: ${formatCurrency(
                       (activeShift.openingFloat || 0) +
@@ -677,13 +702,14 @@ export const POSEngine: React.FC<ComponentProps> = ({ isLoading }) => {
               </Typography>
             </Box>
           </Box>
-          <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+          <Box sx={{ display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap", width: { xs: "100%", sm: "auto" }, justifyContent: { xs: "flex-start", sm: "flex-end" } }}>
             <Button
               variant="outlined"
               color={pendingOutboxCount > 0 ? "warning" : "inherit"}
               size="small"
               startIcon={<CloudQueue />}
               onClick={() => setShowOutboxDrawer(true)}
+              sx={{ flex: { xs: 1, sm: "none" } }}
             >
               Outbox ({pendingOutboxCount})
             </Button>
@@ -693,6 +719,7 @@ export const POSEngine: React.FC<ComponentProps> = ({ isLoading }) => {
                 color="error"
                 size="small"
                 startIcon={<LockClock />}
+                sx={{ flex: { xs: 1, sm: "none" } }}
                 onClick={() => {
                   setClosingCashCounted(
                     (activeShift.openingFloat || 0) +
@@ -709,6 +736,7 @@ export const POSEngine: React.FC<ComponentProps> = ({ isLoading }) => {
                 variant="contained"
                 color="success"
                 size="small"
+                sx={{ flex: { xs: 1, sm: "none" } }}
                 onClick={() => setShowOpenShiftModal(true)}
               >
                 Open Shift
@@ -781,7 +809,9 @@ export const POSEngine: React.FC<ComponentProps> = ({ isLoading }) => {
           />
         </div>
       </div>
+      )}
 
+      {(!isCompact || mobileActiveTab === "checkout") && (
       <div className={classes.innerContainerRight}>
         <Invoice
           products={addedProducts}
@@ -806,6 +836,7 @@ export const POSEngine: React.FC<ComponentProps> = ({ isLoading }) => {
           isCompleted={!!lastCompletedOrder && addedProducts.length === 0}
         />
       </div>
+      )}
 
       {/* Printable Receipt Modal */}
       <Modal

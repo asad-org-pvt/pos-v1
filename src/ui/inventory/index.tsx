@@ -49,9 +49,15 @@ const Inventory: React.FC<ComponentProps> = () => {
   };
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Box sx={{ borderBottom: 1, borderColor: "divider", px: 2, pt: 1, bgcolor: "background.paper" }}>
-        <Tabs value={activeTab} onChange={(_, val) => setActiveTab(val)}>
+    <Box sx={{ width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box", overflowX: "hidden" }}>
+      <Box sx={{ borderBottom: 1, borderColor: "divider", px: { xs: 1, sm: 2 }, pt: 1, bgcolor: "background.paper" }}>
+        <Tabs
+          value={activeTab}
+          onChange={(_, val) => setActiveTab(val)}
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
+        >
           <Tab label="📊 Inventory Dashboard" />
           <Tab label="📦 Products Catalog" />
           <Tab label="📋 Stock Movements & Adjustments" />

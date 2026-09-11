@@ -34,6 +34,10 @@ export const useStylesFromThemeFunction = createUseStyles(
         margin: "2px",
         borderRadius: "10px",
         backgroundColor: Colors.blueGrayLight,
+        "@media (max-width: 768px)": {
+          width: "100%",
+          minWidth: "0",
+        },
       },
       innerContainerRight: {
         width: "30%",
@@ -44,6 +48,10 @@ export const useStylesFromThemeFunction = createUseStyles(
         margin: "2px",
         borderRadius: "10px",
         backgroundColor: Colors.blueGrayLight,
+        "@media (max-width: 768px)": {
+          width: "100%",
+          minWidth: "0",
+        },
       },
       productSearchContainer: {
         width: "100%",
@@ -141,6 +149,10 @@ export const useStylesFromThemeFunction = createUseStyles(
         justifyContent: "center",
         paddingLeft: "10%",
         paddingRight: "10%",
+        "@media (max-width: 768px)": {
+          paddingLeft: "0",
+          paddingRight: "0",
+        },
       },
     };
   }

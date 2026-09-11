@@ -27,6 +27,11 @@ export const useStylesFromThemeFunction = createUseStyles((theme: ThemeInterface
       margin: '2px',
       backgroundColor: 'var(--bg-paper, #ffffff)',
       color: 'var(--text-primary, #0f172a)',
+      '@media (max-width: 768px)': {
+        flexDirection: 'column',
+        padding: '4px',
+        margin: 0,
+      },
     },
     innerContainerLeft: {
       width: '70%',
@@ -37,6 +42,12 @@ export const useStylesFromThemeFunction = createUseStyles((theme: ThemeInterface
       margin: '2px',
       borderRadius: '10px',
       backgroundColor: 'var(--bg-paper, #ffffff)',
+      '@media (max-width: 768px)': {
+        width: '100%',
+        minWidth: 'unset',
+        padding: '6px',
+        margin: 0,
+      },
     },
     innerContainerRight: {
       width: '30%',
@@ -47,6 +58,12 @@ export const useStylesFromThemeFunction = createUseStyles((theme: ThemeInterface
       margin: '2px',
       borderRadius: '10px',
       backgroundColor: 'var(--bg-paper, #ffffff)',
+      '@media (max-width: 768px)': {
+        width: '100%',
+        minWidth: 'unset',
+        padding: '6px',
+        margin: '8px 0 0 0',
+      },
     },
     productSearchContainer: {
       width: '100%',
@@ -145,6 +162,10 @@ export const useStylesFromThemeFunction = createUseStyles((theme: ThemeInterface
       justifyContent: 'center',
       paddingLeft: '10%',
       paddingRight: '10%',
+      '@media (max-width: 768px)': {
+        paddingLeft: '1%',
+        paddingRight: '1%',
+      },
     },
   };
 });
